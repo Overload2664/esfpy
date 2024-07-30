@@ -219,13 +219,6 @@ class ArrayRecord:
         self.type_code = type_code
         self.tag_name = tag_name
         self.version = version
-        self.array = []
-
-    def append(self, node):
-        self.array.append(node)
-
-    def remove(self, index):
-        pass
 
     def __hash__(self):
         return hash(self.tag_name)
@@ -235,12 +228,6 @@ class ArrayRecord:
             return True
         else:
             return False
-
-    def __getitem__(self, index):
-        return self.array[index]
-
-    def __setitem__(self, node, arg):
-        self.append(node)
 
     def __str__(self):
         return "Record Array: " + self.tag_name
