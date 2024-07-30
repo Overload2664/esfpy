@@ -534,7 +534,7 @@ class ESFReader:
                     array_size, byte_len = from_uintvart(array_size_byte)
                     self.current_byte += byte_len
 
-                    array_length = (array_size // get_data_class_and_size(data_type_byte)[1]) + 1
+                    array_length = (array_size // get_data_class_and_size(data_type_byte)[1])
                     array_node = ArrayNode(data_type_byte)
                     stack_dict[-1][array_node] = OrderedDict()
                     stack_dict.append(stack_dict[-1][array_node])
@@ -558,7 +558,6 @@ class ESFReader:
                     for i in range(array_length):
                         self.read_data_node(data_type_byte, stack_dict)
 
-                    # print(self.current_byte)
 
                     stack_dict[-2][array_node] = list(stack_dict[-2][array_node])
                     stack_dict.pop(-1)
@@ -612,53 +611,99 @@ class ESFReader:
                     # stack_dict[-1][record] = OrderedDict()
                     # stack_dict.append(stack_dict[-1][record])
                     continue
+            else:
+                if(type_code == b'\xe0'):
+                    tag_name_index_byte = self.read_bytes(2, self.current_byte)
+                    self.current_byte += 2
+
+                    tag_name_index = int.from_bytes(tag_name_index_byte, byteorder='little', signed=False)
+                    tag_name = self.tag_names[tag_name_index]
+
+                    version_byte = self.read_bytes(1, self.current_byte)
+                    self.current_byte += 1
+                    version = int.from_bytes(version_byte, byteorder='little', signed=False)
+
+                    size_byte = self.read_bytes(5, self.current_byte)
+                    size, byte_len = from_uintvart(size_byte)
+                    self.current_byte += byte_len
+
+                    elements_number_byte = self.read_bytes(5, self.current_byte)
+                    elements_number, byte_len = from_uintvart(elements_number_byte)
+                    self.current_byte += byte_len
+
+                    array_record = ArrayRecord(type_code, tag_name, version)
+                    stack_dict[-1][array_record] = []
+
+                    # A small bug may appear here...
+                    # while(self.current_byte < offset - 1):
+                    for i in range(elements_number):
+                        size_byte = self.read_bytes(5, self.current_byte)
+                        size, byte_len = from_uintvart(size_byte)
+                        self.current_byte += byte_len
+                        offset = size + self.current_byte + 1
+                        # size = offset - self.current_byte - 1 # -> offset = size + self.current_byte + 1
+
+                        new_dict = OrderedDict()
+                        self.read_body(new_dict, is_root=False, initial_offset=offset)
+                        stack_dict[-1][array_record].append(new_dict)
+
+                    
+                    continue
+                    # tag_name_index_byte = self.read_bytes(2, self.current_byte)
+                    # self.current_byte += 2
+                    # tag_name_index = int.from_bytes(tag_name_index_byte, byteorder='little', signed=False)
+                    # tag_name = self.tag_names[tag_name_index]
+
+                    # version_byte = self.read_bytes(1, self.current_byte)
+                    # self.current_byte += 1
+                    # version = int.from_bytes(version_byte, byteorder='little', signed=False)
+
+                    # size_byte = self.read_bytes(5, self.current_byte)
+                    # size, byte_len = from_uintvart(size_byte)
+                    # self.current_byte += byte_len
+                    # record = NodeRecord(RecordType.TRAD, tag_name, version, size)
+                    # stack_offest.append(self.current_byte + size)
+
+                    # stack_dict[-1][record] = OrderedDict()
+                    # stack_dict.append(stack_dict[-1][record])
+                    # continue
+                elif((type_code[0] & 0b11100000) == 0xc0):
+                    record_field = type_code + self.read_bytes(1, self.current_byte)
+                    self.current_byte += 1
+                    record_field_int = int.from_bytes(record_field, byteorder='big', signed=False)
+
+                    tag_name_index = record_field_int & (0b0000000111111111)
+                    tag_name = self.tag_names[tag_name_index]
+
+                    version = (record_field[0] & 0b00011110) >> 1
+                    
+                    size_byte = self.read_bytes(5, self.current_byte)
+                    size, byte_len = from_uintvart(size_byte)
+                    self.current_byte += byte_len
+
+                    elements_number_byte = self.read_bytes(5, self.current_byte)
+                    elements_number, byte_len = from_uintvart(elements_number_byte)
+                    self.current_byte += byte_len
+
+                    array_record = ArrayRecord(type_code, tag_name, version)
+                    stack_dict[-1][array_record] = []
+
+                    # A small bug may appear here...
+                    # while(self.current_byte < offset - 1):
+                    for i in range(elements_number):
+                        size_byte = self.read_bytes(5, self.current_byte)
+                        size, byte_len = from_uintvart(size_byte)
+                        self.current_byte += byte_len
+                        offset = size + self.current_byte
+                        # size = offset - self.current_byte - 1 # -> offset = size + self.current_byte + 1
+
+                        new_dict = OrderedDict()
+                        self.read_body(new_dict, is_root=False, initial_offset=offset)
+                        stack_dict[-1][array_record].append(new_dict)
+                    continue
 
             # This is good, it simply means that we didn't face an unsupported type code
-            # print(self.current_byte)
-            # print(type_code)
             break
-            # else:
-            #     if(type_code == b'\xa0'):
-            #         tag_name_index_byte = self.read_bytes(2, self.current_byte)
-            #         self.current_byte += 2
-            #         tag_name_index = int.from_bytes(tag_name_index_byte, byteorder='little', signed=False)
-            #         tag_name = self.tag_names[tag_name_index]
-
-            #         version_byte = self.read_bytes(1, self.current_byte)
-            #         self.current_byte += 1
-            #         version = int.from_bytes(version_byte, byteorder='little', signed=False)
-
-            #         size_byte = self.read_bytes(5, self.current_byte)
-            #         size, byte_len = from_uintvart(size_byte)
-            #         self.current_byte += byte_len
-            #         record = NodeRecord(RecordType.TRAD, tag_name, version, size)
-            #         stack_offest.append(self.current_byte + size)
-
-            #         stack_dict[-1][record] = OrderedDict()
-            #         stack_dict.append(stack_dict[-1][record])
-            #         continue
-            #     elif((type_code[0] & 0b11100000) == 0x80):
-            #         record_field = type_code + self.read_bytes(1, self.current_byte)
-            #         self.current_byte += 1
-            #         record_field_int = int.from_bytes(record_field, byteorder='big', signed=False)
-
-            #         tag_name_index = record_field_int & (0b0000000111111111)
-            #         tag_name = self.tag_names[tag_name_index]
-
-            #         version = (record_field[0] & 0b00011110) >> 1
-                    
-            #         size_byte = self.read_bytes(5, self.current_byte)
-            #         size, byte_len = from_uintvart(size_byte)
-            #         self.current_byte += byte_len
-            #         record = NodeRecord(RecordType.COMP, tag_name, version, size)
-            #         stack_offest.append(self.current_byte + size)
-
-            #         stack_dict[-1][record] = OrderedDict()
-            #         stack_dict.append(stack_dict[-1][record])
-            #         continue
-
-            # for key in self.body["CAMPAIGN_SAVE_GAME"]["SAVE_GAME_HEADER"]["DATE"].keys():
-            #     print(key)
             
 
     def read_bytes(self, byte_count, position):
