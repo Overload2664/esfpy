@@ -14,7 +14,7 @@ class ESFReader:
     def read(self):
         self.read_header()
         self.read_footer()
-        self.read_body(self.body, root_start=True)
+        self.read_body()
 
     def read_header(self):
         self.read_magic_code()
@@ -109,13 +109,13 @@ class ESFReader:
 
             self.ascii_strings[ascii_string_index] = ascii_string
 
-    def read_data_node(self, type_code, stack_dict):
+    def read_data_node(self, type_code):
         if(type_code == b'\x01'):
             bool_byte = self.read_bytes(1, self.current_byte)
             self.current_byte += 1
 
             bool_data = Bool(bool_byte)
-            stack_dict[-1][bool_data] = None
+            self.stack_dict[-1][bool_data] = None
             return
 
         if(type_code == b'\x02'):
@@ -125,7 +125,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x03'):
@@ -135,7 +135,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x04'):
@@ -145,7 +145,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x05'):
@@ -155,7 +155,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x06'):
@@ -165,7 +165,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x07'):
@@ -175,7 +175,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x08'):
@@ -185,7 +185,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x09'):
@@ -195,7 +195,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int(type_code, int_byte, size, signed, "little")
-            stack_dict[-1][int_data] = None
+            self.stack_dict[-1][int_data] = None
             return
 
         if(type_code == b'\x0a'):
@@ -204,7 +204,7 @@ class ESFReader:
             self.current_byte += size
 
             float_data = Float(type_code, float_byte, size)
-            stack_dict[-1][float_data] = None
+            self.stack_dict[-1][float_data] = None
             return
 
         if(type_code == b'\x0b'):
@@ -213,7 +213,7 @@ class ESFReader:
             self.current_byte += size
 
             float_data = Float(type_code, float_byte, size)
-            stack_dict[-1][float_data] = None
+            self.stack_dict[-1][float_data] = None
             return
 
         if(type_code == b'\x0c'):
@@ -223,7 +223,7 @@ class ESFReader:
             self.current_byte += size
 
             XYCoord_data = XYCoordinate(floatXY_byte)
-            stack_dict[-1][XYCoord_data] = None
+            self.stack_dict[-1][XYCoord_data] = None
             return
 
         if(type_code == b'\x0d'):
@@ -233,20 +233,20 @@ class ESFReader:
             self.current_byte += size
 
             XYZCoord_data = XYZCoordinate(floatXYZ_byte)
-            stack_dict[-1][XYZCoord_data] = None
+            self.stack_dict[-1][XYZCoord_data] = None
             return
 
         if(self.magic_code == Magiccode.ABCA):
             if(type_code == b'\x12'):
                 bool_data = Bool(None)
                 bool_data.convert_from(True)
-                stack_dict[-1][bool_data] = None
+                self.stack_dict[-1][bool_data] = None
                 return
 
             if(type_code == b'\x13'):
                 bool_data = Bool(None)
                 bool_data.convert_from(False)
-                stack_dict[-1][bool_data] = None
+                self.stack_dict[-1][bool_data] = None
                 return
     
             if(type_code == b'\x14'):
@@ -255,7 +255,7 @@ class ESFReader:
 
                 int_data = Int(type_code, None, size, signed, "little")
                 int_data.convert_from(0)
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x15'):
@@ -264,7 +264,7 @@ class ESFReader:
 
                 int_data = Int(type_code, None, size, signed, "little")
                 int_data.convert_from(1)
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x16'):
@@ -275,7 +275,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = Int(type_code, int_byte, real_size, signed, "little")
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x17'):
@@ -286,7 +286,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = Int(type_code, int_byte, real_size, signed, "little")
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x18'):
@@ -298,7 +298,7 @@ class ESFReader:
 
                 int_data = Int(type_code, int_byte, real_size, signed, "big")
                 int_data.to_little()
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x19'):
@@ -307,7 +307,7 @@ class ESFReader:
 
                 int_data = Int(type_code, None, size, signed, "little")
                 int_data.convert_from(0)
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x1a'):
@@ -318,7 +318,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = Int(type_code, int_byte, real_size, signed, "little")
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x1b'):
@@ -329,7 +329,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = Int(type_code, int_byte, real_size, signed, "little")
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x1c'):
@@ -341,7 +341,7 @@ class ESFReader:
 
                 int_data = Int(type_code, int_byte, real_size, signed, "big")
                 int_data.to_little()
-                stack_dict[-1][int_data] = None
+                self.stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x1d'):
@@ -349,85 +349,49 @@ class ESFReader:
 
                 float_data = Float(type_code, None, size)
                 float_data.convert_from(0)
-                stack_dict[-1][float_data] = None
+                self.stack_dict[-1][float_data] = None
                 return
 
-    def read_body(self, initial_dict, root_start=False):
-        stack_offest = []
-        stack_dict = []
-        initial_type_code = self.read_bytes(1, self.current_byte)
+    def read_body(self):
+        self.stack_offest = []
+        self.stack_dict = []
+        root_code = self.read_bytes(1, self.current_byte)
         self.current_byte += 1
-        # if root_code != b'\x80':
-        #     raise "That's not supposed to happen"
+        if root_code != b'\x80':
+            raise "That's not supposed to happen"
 
-        initial_record = None
+        tag_name_byte_index = self.read_bytes(2, self.current_byte)
+        tag_name_index = int.from_bytes(tag_name_byte_index, byteorder='little', signed=False)
+        tag_name = self.tag_names[tag_name_index]
+        self.current_byte += 2
 
-        if(self.magic_code != Magiccode.ABCA):
-            if(initial_type_code == b'\x80'):
-                tag_name_index_byte = self.read_bytes(2, self.current_byte)
-                self.current_byte += 2
+        version_byte = self.read_bytes(1, self.current_byte)
+        version = int.from_bytes(version_byte, byteorder='little', signed=False)
+        self.current_byte += 1
 
-                tag_name_index = int.from_bytes(tag_name_index_byte, byteorder='little', signed=False)
-                tag_name = self.tag_names[tag_name_index]
+        root_record = None
 
-                version_byte = self.read_bytes(1, self.current_byte)
-                self.current_byte += 1
-                version = int.from_bytes(version_byte, byteorder='little', signed=False)
-
-                offset_byte = self.read_bytes(4, self.current_byte)
-                offset = int.from_bytes(offset_byte, byteorder='little', signed=False)
-                self.current_byte += 4
-                size = offset - self.current_byte - 1
-                initial_record = NodeRecord(RecordType.ORIG, tag_name, version, size)
-                stack_offest.append(offset - 1)
-
-                # stack_dict[-1][record] = OrderedDict()
-                # stack_dict.append(stack_dict[-1][record])
+        if(self.magic_code == Magiccode.ABCA):
+            size_byte = self.read_bytes(5, self.current_byte)
+            size, byte_len = from_uintvart(size_byte)
+            self.current_byte += byte_len
+            root_record = NodeRecord(RecordType.ROOT, tag_name, version, size)
+            self.stack_offest.append(self.current_byte + size)
         else:
-            if(initial_type_code == b'\xa0' or (root_start and initial_type_code == b'\x80')):
-                tag_name_index_byte = self.read_bytes(2, self.current_byte)
-                self.current_byte += 2
-                tag_name_index = int.from_bytes(tag_name_index_byte, byteorder='little', signed=False)
-                tag_name = self.tag_names[tag_name_index]
+            offset_byte = self.read_bytes(4, self.current_byte)
+            offset = int.from_bytes(offset_byte, byteorder='little', signed=False)
+            self.current_byte += 4
+            size = offset - self.current_byte - 1
+            root_record = NodeRecord(RecordType.ORIG, tag_name, version, size)
+            self.stack_offest.append(offset - 1)
 
-                version_byte = self.read_bytes(1, self.current_byte)
-                self.current_byte += 1
-                version = int.from_bytes(version_byte, byteorder='little', signed=False)
+        self.body[root_record] = OrderedDict()
+        self.stack_dict.append(self.body[root_record])
 
-                size_byte = self.read_bytes(5, self.current_byte)
-                size, byte_len = from_uintvart(size_byte)
-                self.current_byte += byte_len
-                initial_record = NodeRecord(RecordType.TRAD, tag_name, version, size)
-                stack_offest.append(self.current_byte + size)
-
-                # stack_dict[-1][record] = OrderedDict()
-                # stack_dict.append(stack_dict[-1][record])
-            elif((initial_type_code[0] & 0b11100000) == 0x80):
-                record_field = initial_type_code + self.read_bytes(1, self.current_byte)
-                self.current_byte += 1
-                record_field_int = int.from_bytes(record_field, byteorder='big', signed=False)
-
-                tag_name_index = record_field_int & (0b0000000111111111)
-                tag_name = self.tag_names[tag_name_index]
-
-                version = (record_field[0] & 0b00011110) >> 1
-                
-                size_byte = self.read_bytes(5, self.current_byte)
-                size, byte_len = from_uintvart(size_byte)
-                self.current_byte += byte_len
-                initial_record = NodeRecord(RecordType.COMP, tag_name, version, size)
-                stack_offest.append(self.current_byte + size)
-
-                # stack_dict[-1][record] = OrderedDict()
-                # stack_dict.append(stack_dict[-1][record])
-
-        initial_dict[initial_record] = OrderedDict()
-        stack_dict.append(initial_dict[initial_record])
-
-        while(len(stack_offest) > 0):
-            if(self.current_byte >= stack_offest[-1]):
-                stack_offest.pop(-1)
-                stack_dict.pop(-1)
+        while(len(self.stack_offest) > 0):
+            if(self.current_byte >= self.stack_offest[-1]):
+                self.stack_offest.pop(-1)
+                self.stack_dict.pop(-1)
                 continue
 
             type_code = self.read_bytes(1, self.current_byte)
@@ -451,10 +415,10 @@ class ESFReader:
                     self.current_byte += 4
                     size = offset - self.current_byte - 1
                     record = NodeRecord(RecordType.ORIG, tag_name, version, size)
-                    stack_offest.append(offset - 1)
+                    self.stack_offest.append(offset - 1)
 
-                    stack_dict[-1][record] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][record])
+                    self.stack_dict[-1][record] = OrderedDict()
+                    self.stack_dict.append(self.stack_dict[-1][record])
                     continue
             else:
                 if(type_code == b'\xa0'):
@@ -471,10 +435,10 @@ class ESFReader:
                     size, byte_len = from_uintvart(size_byte)
                     self.current_byte += byte_len
                     record = NodeRecord(RecordType.TRAD, tag_name, version, size)
-                    stack_offest.append(self.current_byte + size)
+                    self.stack_offest.append(self.current_byte + size)
 
-                    stack_dict[-1][record] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][record])
+                    self.stack_dict[-1][record] = OrderedDict()
+                    self.stack_dict.append(self.stack_dict[-1][record])
                     continue
                 elif((type_code[0] & 0b11100000) == 0x80):
                     record_field = type_code + self.read_bytes(1, self.current_byte)
@@ -490,10 +454,10 @@ class ESFReader:
                     size, byte_len = from_uintvart(size_byte)
                     self.current_byte += byte_len
                     record = NodeRecord(RecordType.COMP, tag_name, version, size)
-                    stack_offest.append(self.current_byte + size)
+                    self.stack_offest.append(self.current_byte + size)
 
-                    stack_dict[-1][record] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][record])
+                    self.stack_dict[-1][record] = OrderedDict()
+                    self.stack_dict.append(self.stack_dict[-1][record])
                     continue
 
             if(type_code == b'\x0e'):
@@ -505,7 +469,7 @@ class ESFReader:
                     string = self.unicode_strings[string_index]
                     string_data = UniString(string)
 
-                    stack_dict[-1][string_data] = None
+                    self.stack_dict[-1][string_data] = None
                     continue
                 else:
                     size_byte = self.read_bytes(2, self.current_byte)
@@ -517,7 +481,7 @@ class ESFReader:
 
                     string_data = UniString(string)
 
-                    stack_dict[-1][string_data] = None
+                    self.stack_dict[-1][string_data] = None
                     continue
 
             if(type_code == b'\x0f'):
@@ -529,7 +493,7 @@ class ESFReader:
                     string = self.ascii_strings[string_index]
                     string_data = ASCIIString(string)
 
-                    stack_dict[-1][string_data] = None
+                    self.stack_dict[-1][string_data] = None
                     continue
                 else:
                     size_byte = self.read_bytes(2, self.current_byte)
@@ -541,13 +505,13 @@ class ESFReader:
 
                     string_data = ASCIIString(string)
 
-                    stack_dict[-1][string_data] = None
+                    self.stack_dict[-1][string_data] = None
                     continue
 
             # data node
             if(int.from_bytes(type_code, byteorder='little', signed=False) >= 0x1 and
                 int.from_bytes(type_code, byteorder='little', signed=False) <= 0x1d):
-                self.read_data_node(type_code, stack_dict)
+                self.read_data_node(type_code)
                 continue
 
             
@@ -565,13 +529,13 @@ class ESFReader:
 
                     array_length = array_size // get_data_class_and_size(data_type_byte)[1]
                     array_node = ArrayNode(data_type, array_length)
-                    stack_dict[-1][array_node] = None
-                    stack_dict.append(array_node)
+                    self.stack_dict[-1][array_node] = None
+                    self.stack_dict.append(array_node)
 
                     for i in range(array_length):
-                        self.read_data_node(data_type, stack_dict)
+                        self.read_data_node(data_type)
 
-                    stack_dict.pop(-1)
+                    self.stack_dict.pop(-1)
                 else:
                     offset_byte = self.read_bytes(4, self.current_byte)
                     offset = int.from_bytes(offset_byte, byteorder='little', signed=False)
@@ -580,13 +544,13 @@ class ESFReader:
 
                     array_length = array_size // get_data_class_and_size(data_type_byte)[1]
                     array_node = ArrayNode(data_type, array_length)
-                    stack_dict[-1][array_node] = None
-                    stack_dict.append(array_node)
+                    self.stack_dict[-1][array_node] = None
+                    self.stack_dict.append(array_node)
 
                     for i in range(array_length):
-                        self.read_data_node(data_type, stack_dict)
+                        self.read_data_node(data_type)
 
-                    stack_dict.pop(-1)
+                    self.stack_dict.pop(-1)
 
 
                 continue
@@ -594,8 +558,255 @@ class ESFReader:
             # last thing remaining: Record Arrays...
             # This little maneuver is going to cost us 51 years
             print(type_code)
-            for key in self.body["CAMPAIGN_SAVE_GAME"]["SAVE_GAME_HEADER"].keys():
-                print(key)
+
+
+            
+            # if(type_code == b'\x01'):
+            #     bool_byte = self.read_bytes(1, self.current_byte)
+            #     self.current_byte += 1
+
+            #     bool_data = Bool(bool_byte)
+            #     self.stack_dict[-1][bool_data] = None
+            #     continue
+
+            # if(type_code == b'\x02'):
+            #     size = 1
+            #     signed = True
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x03'):
+            #     size = 2
+            #     signed = True
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x04'):
+            #     size = 4
+            #     signed = True
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x05'):
+            #     size = 8
+            #     signed = True
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x06'):
+            #     size = 1
+            #     signed = False
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x07'):
+            #     size = 2
+            #     signed = False
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x08'):
+            #     size = 4
+            #     signed = False
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x09'):
+            #     size = 8
+            #     signed = False
+            #     int_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     int_data = Int(type_code, int_byte, size, signed, "little")
+            #     self.stack_dict[-1][int_data] = None
+            #     continue
+
+            # if(type_code == b'\x0a'):
+            #     size = 4
+            #     float_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     float_data = Float(type_code, float_byte, size)
+            #     self.stack_dict[-1][float_data] = None
+            #     continue
+
+            # if(type_code == b'\x0b'):
+            #     size = 8
+            #     float_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     float_data = Float(type_code, float_byte, size)
+            #     self.stack_dict[-1][float_data] = None
+            #     continue
+
+            # if(type_code == b'\x0c'):
+            #     size = 4*2
+
+            #     floatXY_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     XYCoord_data = XYCoordinate(floatXY_byte)
+            #     self.stack_dict[-1][XYCoord_data] = None
+            #     continue
+
+            # if(type_code == b'\x0d'):
+            #     size = 4*3
+
+            #     floatXYZ_byte = self.read_bytes(size, self.current_byte)
+            #     self.current_byte += size
+
+            #     XYZCoord_data = XYZCoordinate(floatXYZ_byte)
+            #     self.stack_dict[-1][XYZCoord_data] = None
+            #     continue
+
+            # if(self.magic_code == Magiccode.ABCA):
+            #     if(type_code == b'\x12'):
+            #         bool_data = Bool(None)
+            #         bool_data.convert_from(True)
+            #         self.stack_dict[-1][bool_data] = None
+            #         continue
+
+            #     if(type_code == b'\x13'):
+            #         bool_data = Bool(None)
+            #         bool_data.convert_from(False)
+            #         self.stack_dict[-1][bool_data] = None
+            #         continue
+        
+            #     if(type_code == b'\x14'):
+            #         size = 4
+            #         signed = False
+
+            #         int_data = Int(type_code, None, size, signed, "little")
+            #         int_data.convert_from(0)
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x15'):
+            #         size = 4
+            #         signed = False
+
+            #         int_data = Int(type_code, None, size, signed, "little")
+            #         int_data.convert_from(1)
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x16'):
+            #         real_size = 4
+            #         compact_size = 1
+            #         signed = False
+            #         int_byte = self.read_bytes(compact_size, self.current_byte)
+            #         self.current_byte += compact_size
+
+            #         int_data = Int(type_code, int_byte, real_size, signed, "little")
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x17'):
+            #         real_size = 4
+            #         compact_size = 2
+            #         signed = False
+            #         int_byte = self.read_bytes(compact_size, self.current_byte)
+            #         self.current_byte += compact_size
+
+            #         int_data = Int(type_code, int_byte, real_size, signed, "little")
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x18'):
+            #         real_size = 4
+            #         compact_size = 3
+            #         signed = False
+            #         int_byte = self.read_bytes(compact_size, self.current_byte)
+            #         self.current_byte += compact_size
+
+            #         int_data = Int(type_code, int_byte, real_size, signed, "big")
+            #         int_data.to_little()
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x19'):
+            #         size = 4
+            #         signed = True
+
+            #         int_data = Int(type_code, None, size, signed, "little")
+            #         int_data.convert_from(0)
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x1a'):
+            #         real_size = 4
+            #         compact_size = 1
+            #         signed = True
+            #         int_byte = self.read_bytes(compact_size, self.current_byte)
+            #         self.current_byte += compact_size
+
+            #         int_data = Int(type_code, int_byte, real_size, signed, "little")
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x1b'):
+            #         real_size = 4
+            #         compact_size = 2
+            #         signed = True
+            #         int_byte = self.read_bytes(compact_size, self.current_byte)
+            #         self.current_byte += compact_size
+
+            #         int_data = Int(type_code, int_byte, real_size, signed, "little")
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x1c'):
+            #         real_size = 4
+            #         compact_size = 3
+            #         signed = True
+            #         int_byte = self.read_bytes(compact_size, self.current_byte)
+            #         self.current_byte += compact_size
+
+            #         int_data = Int(type_code, int_byte, real_size, signed, "big")
+            #         int_data.to_little()
+            #         self.stack_dict[-1][int_data] = None
+            #         continue
+
+            #     if(type_code == b'\x1d'):
+            #         size = 4
+
+            #         float_data = Float(type_code, None, size)
+            #         float_data.convert_from(0)
+            #         self.stack_dict[-1][float_data] = None
+            #         continue
+
+
+
+            # for key in self.body["CAMPAIGN_SAVE_GAME"]["SAVE_GAME_HEADER"]["DATE"].keys():
+            #     print(key)
             break
 
     def read_bytes(self, byte_count, position):
