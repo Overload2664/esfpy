@@ -174,23 +174,25 @@ class ASCIIString:
         return self.data.decode("utf-8")
 
 class ArrayNode:
-    def __init__(self, node_type, size):
+    def __init__(self, node_type):
         self.node_type = node_type
-        self.size = size
-        self.array = []
 
-    def append(self, node):
-        self.array.append(node)
+    # def append(self, node):
+    #     self.array.append(node)
 
-    def __getitem__(self, index):
-        return self.array[index]
+    # def remove(self, index):
+    #     pass
 
-    def __setitem__(self, node, arg):
-        self.append(node)
+    # def __getitem__(self, index):
+    #     return self.array[index]
+
+    # # Doing it like this for legacy reasons
+    # def __setitem__(self, node, arg):
+    #     self.append(node)
 
     def __str__(self):
         data_name = get_data_class_and_size(self.node_type)[0].__name__
-        return "Array Node " + data_name
+        return "Array Node: " + data_name
 
 class NodeRecord:
     def __init__(self, record_type, tag_name, version, size):
@@ -198,6 +200,7 @@ class NodeRecord:
         self.tag_name = tag_name
         self.version = version
         self.size = size
+
 
     def __hash__(self):
         return hash(self.tag_name)
@@ -210,6 +213,37 @@ class NodeRecord:
 
     def __str__(self):
         return "Record: " + self.tag_name
+
+class ArrayRecord:
+    def __init__(self, type_code, tag_name, version):
+        self.type_code = type_code
+        self.tag_name = tag_name
+        self.version = version
+        self.array = []
+
+    def append(self, node):
+        self.array.append(node)
+
+    def remove(self, index):
+        pass
+
+    def __hash__(self):
+        return hash(self.tag_name)
+
+    def __eq__(self, tag_name):
+        if(self.tag_name == tag_name):
+            return True
+        else:
+            return False
+
+    def __getitem__(self, index):
+        return self.array[index]
+
+    def __setitem__(self, node, arg):
+        self.append(node)
+
+    def __str__(self):
+        return "Record Array: " + self.tag_name
 
 # Return: (Class, wri_size: int, real_size: int)
 def get_data_class_and_size(type_code):

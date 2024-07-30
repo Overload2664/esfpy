@@ -536,13 +536,14 @@ class ESFReader:
                     self.current_byte += byte_len
 
                     array_length = array_size // get_data_class_and_size(data_type_byte)[1]
-                    array_node = ArrayNode(data_type, array_length)
-                    stack_dict[-1][array_node] = None
-                    stack_dict.append(array_node)
+                    array_node = ArrayNode(data_type)
+                    stack_dict[-1][array_node] = OrderedDict()
+                    stack_dict.append(stack_dict[-1][array_node])
 
                     for i in range(array_length):
                         self.read_data_node(data_type, stack_dict)
 
+                    stack_dict[-1][array_node] = list(stack_dict[-1][array_node])
                     stack_dict.pop(-1)
                 else:
                     offset_byte = self.read_bytes(4, self.current_byte)
@@ -551,13 +552,14 @@ class ESFReader:
                     array_size = offset - self.current_byte - 1
 
                     array_length = array_size // get_data_class_and_size(data_type_byte)[1]
-                    array_node = ArrayNode(data_type, array_length)
-                    stack_dict[-1][array_node] = None
-                    stack_dict.append(array_node)
+                    array_node = ArrayNode(data_type)
+                    stack_dict[-1][array_node] = OrderedDict()
+                    stack_dict.append(stack_dict[-1][array_node])
 
                     for i in range(array_length):
                         self.read_data_node(data_type, stack_dict)
 
+                    stack_dict[-1][array_node] = list(stack_dict[-1][array_node])
                     stack_dict.pop(-1)
 
 
@@ -810,8 +812,6 @@ class ESFReader:
             #         float_data.convert_from(0)
             #         stack_dict[-1][float_data] = None
             #         continue
-
-
 
             # for key in self.body["CAMPAIGN_SAVE_GAME"]["SAVE_GAME_HEADER"]["DATE"].keys():
             #     print(key)
