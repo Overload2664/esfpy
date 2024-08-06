@@ -276,6 +276,9 @@ def get_data_class_and_size(type_code):
     if(type_code == b'\x0e'):
         return (UniString, 4, 4)
 
+    if(type_code == b'\x0f'):
+        return (ASCIIString, 4, 4)
+
     if(type_code == b'\x10'):
         return (Angle, 2, 2)
 
