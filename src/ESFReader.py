@@ -114,7 +114,7 @@ class ESFReader:
             bool_byte = self.read_bytes(1, self.current_byte)
             self.current_byte += 1
 
-            bool_data = Bool(bool_byte)
+            bool_data = Bool(type_code, bool_byte)
             stack_dict[-1][bool_data] = None
             return
 
@@ -275,13 +275,13 @@ class ESFReader:
 
         if(self.magic_code == Magiccode.ABCA):
             if(type_code == b'\x12'):
-                bool_data = Bool(None)
+                bool_data = Bool(type_code, None)
                 bool_data.convert_from(True)
                 stack_dict[-1][bool_data] = None
                 return
 
             if(type_code == b'\x13'):
-                bool_data = Bool(None)
+                bool_data = Bool(type_code, None)
                 bool_data.convert_from(False)
                 stack_dict[-1][bool_data] = None
                 return

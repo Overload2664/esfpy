@@ -42,7 +42,8 @@ def to_uintvart(integer):
 #     print(from_uintvart(xd))
 
 class Bool:
-    def __init__(self, data):
+    def __init__(self, code, data):
+        self.code = code
         self.data = data
         self.size = 1
 
