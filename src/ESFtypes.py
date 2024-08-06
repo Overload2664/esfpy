@@ -106,7 +106,7 @@ class Float:
         return struct.unpack(self.type, self.data)
 
     def convert_from(self, value):
-        self.data = struct.pack(self.type, self.data)
+        self.data = struct.pack(self.type, value)
 
 class XYCoordinate:
     def __init__(self, data):
