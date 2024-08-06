@@ -1,6 +1,6 @@
 from collections import OrderedDict
-
-from ESFtypes import Magiccode, NodeRecord, RecordType, from_uintvart, UniString, ASCIIString, Int, Bool, XYCoordinate, XYZCoordinate, Angle, ArrayRecord, ArrayNode, get_data_class_and_size
+from ESFtypes import *
+# from ESFtypes import Magiccode, NodeRecord, RecordType, from_uintvart, UniString, ASCIIString, Int, Bool, XYCoordinate, XYZCoordinate, Angle, ArrayRecord, ArrayNode, get_data_class_and_size
 
 
 class ESFReader:
@@ -234,6 +234,43 @@ class ESFReader:
 
             XYZCoord_data = XYZCoordinate(floatXYZ_byte)
             stack_dict[-1][XYZCoord_data] = None
+            return
+
+        if(type_code == b'\x0e'):
+            size = 4
+            string_index_byte = self.read_bytes(size, self.current_byte)
+            self.current_byte += size
+
+            string_index = int.from_bytes(string_index_byte, byteorder='little', signed=False)
+            try:
+                string = self.ascii_strings[string_index]
+            except:
+                string = "ERROR: UKNOWN"
+            string_data = UniString(string)
+
+            stack_dict[-1][string_data] = None
+            return
+
+        if(type_code == b'\x0f'):
+            size = 4
+            string_index_byte = self.read_bytes(size, self.current_byte)
+            self.current_byte += size
+
+            string_index = int.from_bytes(string_index_byte, byteorder='little', signed=False)
+            string = self.ascii_strings[string_index]
+            string_data = ASCIIString(string)
+
+            stack_dict[-1][string_data] = None
+            return
+
+        if(type_code == b'\x10'):
+            size = 2
+            signed = False
+            angle_byte = self.read_bytes(size, self.current_byte)
+            self.current_byte += size
+
+            angle_data = Angle(angle_byte)
+            stack_dict[-1][angle_data] = None
             return
 
         if(self.magic_code == Magiccode.ABCA):
@@ -640,7 +677,7 @@ class ESFReader:
                         size_byte = self.read_bytes(5, self.current_byte)
                         size, byte_len = from_uintvart(size_byte)
                         self.current_byte += byte_len
-                        offset = size + self.current_byte + 1
+                        offset = size + self.current_byte
                         # size = offset - self.current_byte - 1 # -> offset = size + self.current_byte + 1
 
                         new_dict = OrderedDict()
