@@ -520,7 +520,7 @@ class ESFReader:
                     size_byte = self.read_bytes(2, self.current_byte)
                     self.current_byte += 2
 
-                    size = int.from_bytes(string_index_byte, byteorder='little', signed=False)
+                    size = int.from_bytes(size_byte, byteorder='little', signed=False)
                     string = self.read_bytes(size*2, self.current_byte).decode("utf-16")
                     self.current_byte += size*2
 
@@ -544,8 +544,8 @@ class ESFReader:
                     size_byte = self.read_bytes(2, self.current_byte)
                     self.current_byte += 2
 
-                    size = int.from_bytes(string_index_byte, byteorder='little', signed=False)
-                    string = self.read_bytes(size, self.current_byte).decode("utf-16")
+                    size = int.from_bytes(size_byte, byteorder='little', signed=False)
+                    string = self.read_bytes(size, self.current_byte).decode("utf-8")
                     self.current_byte += size
 
                     string_data = ASCIIString(string)
