@@ -31,15 +31,18 @@ def to_uintvart(integer):
     uintvart += int.to_bytes(integer & 0x7f, 1, "little")
     integer = integer >> 7 
 
-    for i in range(4):
+    i = 1
+    while(integer != 0 and i < 4):
         uintvart = int.to_bytes((integer & 0x7f) | 0x80, 1, "little") + uintvart
         integer = integer >> 7 
+        i += 1
 
-    return uintvart
+    return (uintvart, i)
 
 # if __name__ == "__main__":
-#     xd = to_uintvart(255)
-#     print(from_uintvart(xd))
+#     xd = to_uintvart(128)
+#     print(xd)
+    # print(from_uintvart(xd))
 
 class Bool:
     def __init__(self, code, data):
@@ -177,6 +180,10 @@ class ASCIIString:
 class ArrayNode:
     def __init__(self, node_type):
         self.node_type = node_type
+
+    def get_array_type(self):
+        array_type = int.from_bytes(self.node_type, byteorder='little', signed=False) + 0x40
+        return array_type.to_bytes(1, "little", signed=False)
 
     # def append(self, node):
     #     self.array.append(node)
