@@ -230,7 +230,7 @@ class UInt32_one(DataNode):
 
 
 class Float32(DataNode):
-    def __init__(self, code, data, size):
+    def __init__(self, code, data):
         super().__init__(code)
         self.data = data
         self.size = 4
@@ -276,7 +276,7 @@ class Float32_zero(DataNode):
 
 class XYCoordinate:
     def __init__(self, data):
-        self.code = "\x0c"
+        self.code = b'\x0c'
         self.data = data
         self.size = 8
     
@@ -291,7 +291,7 @@ class XYCoordinate:
 
 class XYZCoordinate:
     def __init__(self, data):
-        self.code = "\x0d"
+        self.code = b'\x0d'
         self.data = data
         self.size = 12
     
@@ -308,7 +308,7 @@ class XYZCoordinate:
 
 class Angle:
     def __init__(self, data):
-        self.code = "\x10"
+        self.code = b'\x10'
         self.data = data
         self.size = 2
     
@@ -432,10 +432,10 @@ def get_data_class_and_size(type_code):
         return (Int, 8, 8)
 
     if(type_code == b'\x0a'):
-        return (Float, 4, 4)
+        return (Float32, 4, 4)
 
     if(type_code == b'\x0b'):
-        return (Float, 8, 8)
+        return (Float64, 8, 8)
 
     if(type_code == b'\x0c'):
         return (XYCoordinate, 8, 8)
@@ -486,4 +486,4 @@ def get_data_class_and_size(type_code):
         return (Int, 3, 4)
 
     if(type_code == b'\x1d'):
-        return (Float, 0, 4)
+        return (Float32, 0, 4)

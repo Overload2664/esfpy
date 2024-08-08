@@ -232,11 +232,12 @@ class ESFWriter:
                 self.byte_list[size_address:size_address+1] = list(size_var)
             elif(isinstance(next_node[0], ArrayNode)):
                 self.write_data_array(next_node[0], next_node[1], magic_code)
-            elif(isinstance(next_node[0], DataNode) or isinstance(next_node[0], UniString) or isinstance(next_node[0], ASCIIString)):
-                self.write_node_data(next_node[0], magic_code)
             else:
-                print("ERROR")
-                break
+                self.write_node_data(next_node[0], magic_code)
+            # else:
+            #     print(next_node[0])
+            #     print("ERROR")
+            #     break
 
     def write_footer(self, magic_code):
         tag_name_size = len(self.tag_names)
@@ -249,12 +250,21 @@ class ESFWriter:
 
         if(magic_code == Magiccode.ABCA or magic_code == Magiccode.ABCF):
             uni_string_size = len(self.UniStrings)
-            self.byte_list += list(tag_name_size.to_bytes(4, "little", signed=False))
+            self.byte_list += list(uni_string_size.to_bytes(4, "little", signed=False))
             for i in range(uni_string_size):
                 uni_string = self.UniStrings[i]
                 uni_string_len = len(uni_string)
                 self.byte_list += list(uni_string_len.to_bytes(2, "little", signed=False))
                 self.byte_list += list(uni_string.encode('utf-16'))[2:]
+                self.byte_list += list(i.to_bytes(4, "little", signed=False))
+
+            ascii_string_size = len(self.ASCIIStrings)
+            self.byte_list += list(ascii_string_size.to_bytes(4, "little", signed=False))
+            for i in range(ascii_string_size):
+                ascii_string = self.ASCIIStrings[i]
+                ascii_string_len = len(ascii_string)
+                self.byte_list += list(ascii_string_len.to_bytes(2, "little", signed=False))
+                self.byte_list += list(ascii_string.encode('utf-8'))
                 self.byte_list += list(i.to_bytes(4, "little", signed=False))
 
 
