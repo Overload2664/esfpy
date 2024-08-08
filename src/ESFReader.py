@@ -124,7 +124,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = Int8(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -134,7 +134,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = Int16(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -144,7 +144,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = Int32(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -154,7 +154,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = Int64(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -164,7 +164,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = UInt8(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -174,7 +174,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = UInt16(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -184,7 +184,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = UInt32(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -194,7 +194,7 @@ class ESFReader:
             int_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            int_data = Int(type_code, int_byte, size, signed, "little")
+            int_data = UInt64(type_code, int_byte)
             stack_dict[-1][int_data] = None
             return
 
@@ -203,7 +203,7 @@ class ESFReader:
             float_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            float_data = Float(type_code, float_byte, size)
+            float_data = Float32(type_code, float_byte)
             stack_dict[-1][float_data] = None
             return
 
@@ -212,7 +212,7 @@ class ESFReader:
             float_byte = self.read_bytes(size, self.current_byte)
             self.current_byte += size
 
-            float_data = Float(type_code, float_byte, size)
+            float_data = Float64(type_code, float_byte)
             stack_dict[-1][float_data] = None
             return
 
@@ -275,14 +275,12 @@ class ESFReader:
 
         if(self.magic_code == Magiccode.ABCA):
             if(type_code == b'\x12'):
-                bool_data = Bool(type_code, None)
-                bool_data.convert_from(True)
+                bool_data = BoolTrue(type_code)
                 stack_dict[-1][bool_data] = None
                 return
 
             if(type_code == b'\x13'):
-                bool_data = Bool(type_code, None)
-                bool_data.convert_from(False)
+                bool_data = BoolFalse(type_code)
                 stack_dict[-1][bool_data] = None
                 return
     
@@ -290,8 +288,7 @@ class ESFReader:
                 size = 4
                 signed = False
 
-                int_data = Int(type_code, None, size, signed, "little")
-                int_data.convert_from(0)
+                int_data = UInt32_zero(type_code)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -299,8 +296,7 @@ class ESFReader:
                 size = 4
                 signed = False
 
-                int_data = Int(type_code, None, size, signed, "little")
-                int_data.convert_from(1)
+                int_data = UInt32_one(type_code)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -311,7 +307,7 @@ class ESFReader:
                 int_byte = self.read_bytes(compact_size, self.current_byte)
                 self.current_byte += compact_size
 
-                int_data = Int(type_code, int_byte, real_size, signed, "little")
+                int_data = UInt8(type_code, int_byte)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -322,7 +318,7 @@ class ESFReader:
                 int_byte = self.read_bytes(compact_size, self.current_byte)
                 self.current_byte += compact_size
 
-                int_data = Int(type_code, int_byte, real_size, signed, "little")
+                int_data = UInt16(type_code, int_byte)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -333,8 +329,7 @@ class ESFReader:
                 int_byte = self.read_bytes(compact_size, self.current_byte)
                 self.current_byte += compact_size
 
-                int_data = Int(type_code, int_byte, real_size, signed, "big")
-                int_data.to_little()
+                int_data = UInt24be(type_code, int_byte)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -342,8 +337,7 @@ class ESFReader:
                 size = 4
                 signed = True
 
-                int_data = Int(type_code, None, size, signed, "little")
-                int_data.convert_from(0)
+                int_data = Int32_zero(type_code)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -354,7 +348,7 @@ class ESFReader:
                 int_byte = self.read_bytes(compact_size, self.current_byte)
                 self.current_byte += compact_size
 
-                int_data = Int(type_code, int_byte, real_size, signed, "little")
+                int_data = Int8(type_code, int_byte)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -365,7 +359,7 @@ class ESFReader:
                 int_byte = self.read_bytes(compact_size, self.current_byte)
                 self.current_byte += compact_size
 
-                int_data = Int(type_code, int_byte, real_size, signed, "little")
+                int_data = Int16(type_code, int_byte)
                 stack_dict[-1][int_data] = None
                 return
 
@@ -376,16 +370,14 @@ class ESFReader:
                 int_byte = self.read_bytes(compact_size, self.current_byte)
                 self.current_byte += compact_size
 
-                int_data = Int(type_code, int_byte, real_size, signed, "big")
-                int_data.to_little()
+                int_data = Int24be(type_code, int_byte)
                 stack_dict[-1][int_data] = None
                 return
 
             if(type_code == b'\x1d'):
                 size = 4
 
-                float_data = Float(type_code, None, size)
-                float_data.convert_from(0)
+                float_data = Float32_zero(type_code)
                 stack_dict[-1][float_data] = None
                 return
 
