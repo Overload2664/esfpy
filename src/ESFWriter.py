@@ -48,6 +48,7 @@ class ESFWriter:
 
     def write_data_array(self, array_data, array_list, magic_code):
         array_type = array_data.get_array_type()
+        type_code = array_data.node_type
         self.byte_list += list(array_type)
 
         # Writing size/offset
@@ -87,7 +88,17 @@ class ESFWriter:
 
     def read_bodies(self, magic_code):
         while(len(self.node_bodies) > 0):
+            # x = 0
+            # for welp in self.node_bodies:
+            #     if(isinstance(welp[0], DataNode) and welp[0].code == b'\x17'):
+            #         x += 1
+            # print(x)
+
+            
             next_node = self.node_bodies.pop()
+            # if(isinstance(next_node[0], ArrayRecord) or isinstance(next_node[0], NodeRecord)):
+            #     print(next_node[0].tag_name)  
+
             if(isinstance(next_node[0], NodeRecord)):
                 if(magic_code == Magiccode.ABCA):
                     if(next_node[2] == 0):
@@ -101,7 +112,7 @@ class ESFWriter:
                         else:
                             tag_index = len(self.tag_names)
                             self.tag_names.append(node_info.tag_name)
-                        list(tag_index.to_bytes(2, "little", signed=False))
+                        self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
 
 
                         version = node_info.version
@@ -121,7 +132,13 @@ class ESFWriter:
                             self.node_bodies.append((keys[i], values[i], 0, 0))
                         
                     else:
-                        break
+                        size_address = next_node[3]
+                        begin_address = size_address + 1
+                        current_address = len(self.byte_list)
+                        size = current_address - begin_address
+                        size_var, size_len = to_uintvart(size)
+
+                        self.byte_list[size_address:size_address+1] = list(size_var)
 
                 else:
                     if(next_node[2] == 0):
@@ -129,12 +146,120 @@ class ESFWriter:
                     else:
                         break
             elif(isinstance(next_node[0], ArrayRecord)):
-                break
-            elif(isinstance(next_node[0], ArrayNode)):
-                self.write_data_array(self, next_node[0], next_node[1], magic_code)
-            else:
-                self.write_node_data(next_node[0], magic_code)
+                if(magic_code == Magiccode.ABCA):
+                    if(next_node[2] == 0):
+                        self.byte_list += list(b'\xe0')
+                        array_info = next_node[0]
+                        array_content = next_node[1]
 
+                        tag_index = None
+                        if(array_info.tag_name in self.tag_names):
+                            tag_index = self.tag_names.index(array_info.tag_name)
+                        else:
+                            tag_index = len(self.tag_names)
+                            self.tag_names.append(array_info.tag_name)
+                        self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
+
+
+                        version = array_info.version
+                        self.byte_list += list(version.to_bytes(1, "little", signed=False))
+
+                        size_address = len(self.byte_list)
+                        self.byte_list += list(b'\x00')
+
+                        length_size = len(array_content)
+                        length_size_var, _ = to_uintvart(length_size)
+                        self.byte_list += list(length_size_var)
+
+
+                        new_node = (next_node[0], next_node[1], 1, size_address)
+                        self.node_bodies.append(new_node)
+
+                        contents = (next_node[1])[::-1]
+                        for content in contents:
+
+                            # self.node_bodies.append((keys[i], values[i], 0, 0))
+
+
+
+                            # content_address = len(self.byte_list)
+                            # self.byte_list += list(b'\x00')
+
+                            array_content_adr = [0]
+                            array_content_end = ("ArrayContentEnd", None, None, array_content_adr)
+                            self.node_bodies.append(array_content_end)
+
+                            keys = list(content.keys())[::-1]
+                            values = list(content.values())[::-1]
+
+                            for i in range(len(keys)):
+
+                                self.node_bodies.append((keys[i], values[i], 0, 0))
+
+                            array_content_start = ("ArrayContentStart", None, None, array_content_adr)
+                            self.node_bodies.append(array_content_start)
+
+
+
+                        
+                    else:
+                        size_address = next_node[3]
+                        begin_address = size_address + 1
+                        current_address = len(self.byte_list)
+                        size = current_address - begin_address
+                        size_var, size_len = to_uintvart(size)
+
+                        self.byte_list[size_address:size_address+1] = list(size_var)
+
+                else:
+                    if(next_node[2] == 0):
+                        break
+                    else:
+                        break
+            # all ABCA for now
+            elif(next_node[0] == "ArrayContentStart"):
+                content_address = len(self.byte_list)
+                next_node[3][0] = content_address
+                self.byte_list += list(b'\x00')
+
+            elif(next_node[0] == "ArrayContentEnd"):
+                size_address = next_node[3][0]
+                begin_address = size_address + 1
+                current_address = len(self.byte_list)
+                size = current_address - begin_address
+                size_var, size_len = to_uintvart(size)
+
+                self.byte_list[size_address:size_address+1] = list(size_var)
+            elif(isinstance(next_node[0], ArrayNode)):
+                self.write_data_array(next_node[0], next_node[1], magic_code)
+            elif(isinstance(next_node[0], DataNode) or isinstance(next_node[0], UniString) or isinstance(next_node[0], ASCIIString)):
+                self.write_node_data(next_node[0], magic_code)
+            else:
+                print("ERROR")
+                break
+
+    def write_footer(self, magic_code):
+        tag_name_size = len(self.tag_names)
+        self.byte_list += list(tag_name_size.to_bytes(2, "little", signed=False))
+
+        for tag_name in self.tag_names:
+            tag_name_len = len(tag_name)
+            self.byte_list += list(tag_name_len.to_bytes(2, "little", signed=False))
+            self.byte_list += list(tag_name.encode('utf-8'))
+
+        if(magic_code == Magiccode.ABCA or magic_code == Magiccode.ABCF):
+            uni_string_size = len(self.UniStrings)
+            self.byte_list += list(tag_name_size.to_bytes(4, "little", signed=False))
+            for i in range(uni_string_size):
+                uni_string = self.UniStrings[i]
+                uni_string_len = len(uni_string)
+                self.byte_list += list(uni_string_len.to_bytes(2, "little", signed=False))
+                self.byte_list += list(uni_string.encode('utf-16'))[2:]
+                self.byte_list += list(i.to_bytes(4, "little", signed=False))
+
+
+
+        
     def write(self, magic_code):
         self.byte_list = []
         self.tag_names = []
@@ -195,9 +320,25 @@ class ESFWriter:
 
         # (NodeClass, OrderedDict, should_address: 0 not yet | 1 yes, address' address)
         self.read_bodies(magic_code)
-        
 
-        print(self.byte_list)
+
+        # Root address
+        begin_address = self.root_node_adr + 1
+        current_address = len(self.byte_list)
+        size = current_address - begin_address
+        size_var, size_len = to_uintvart(size)
+
+        if(magic_code == Magiccode.ABCA):
+            self.byte_list[self.root_node_adr:self.root_node_adr+1] = list(size_var)
+
+        # Footer address
+        current_address = len(self.byte_list)
+        self.byte_list[self.footer_adr_header:self.footer_adr_header+4] = list(current_address.to_bytes(4, "little", signed=False))
+
+        self.write_footer(magic_code)
+        
+        with open("saves/mysave.txt", "wb") as binary_file:
+            binary_file.write(bytearray(self.byte_list))
 
 
 
