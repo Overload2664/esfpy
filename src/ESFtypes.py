@@ -44,9 +44,13 @@ def to_uintvart(integer):
 #     print(xd)
     # print(from_uintvart(xd))
 
-class Bool:
-    def __init__(self, code, data):
+class DataNode:
+    def __init__(self, code):
         self.code = code
+
+class Bool(DataNode):
+    def __init__(self, code, data):
+        super().__init__(code)
         self.data = data
         self.size = 1
 
@@ -65,9 +69,61 @@ class Bool:
         else:
             return "Bool: False"
 
-class Int:
+class BoolTrue(DataNode):
+    def __init__(self, code):
+        super().__init__(code)
+        self.data = b''
+        self.size = 0
+
+    def convert_to(self):
+        return True
+
+    def __str__(self):
+        return "Bool: True"
+
+class BoolFalse(DataNode):
+    def __init__(self, code):
+        super().__init__(code)
+        self.data = b''
+        self.size = 0
+
+    def convert_to(self):
+        return False
+
+    def __str__(self):
+        return "Bool: False"
+
+# class Int:
+#     def __init__(self, code, data, size, signed, endian="little"):
+#         self.code = code
+#         self.data = data
+#         self.size = size
+#         self.signed = signed
+#         self.endian = endian
+
+#     def convert_to(self):
+#         return int.from_bytes(self.data, self.endian, signed=self.signed)
+
+#     def convert_from(self, value):
+#         self.data = value.to_bytes(self.size, self.endian, signed=self.signed)
+
+#     def to_little(self):
+#         self.data = self.convert_to().to_bytes(self.size, "little", signed=self.signed)
+#         self.endian = "little"
+
+#     def __str__(self):
+#         data_type = "int"
+#         if(self.signed == False):
+#             data_type = "u" + data_type
+#         data_type += str(self.size*8)
+#         if(self.endian == "big"):
+#             data_type += "be"
+
+#         return data_type + ": " + str(self.convert_to())
+
+class Int(DataNode):
     def __init__(self, code, data, size, signed, endian="little"):
-        self.code = code
+        super().__init__(code)
         self.data = data
         self.size = size
         self.signed = signed
@@ -93,24 +149,130 @@ class Int:
 
         return data_type + ": " + str(self.convert_to())
 
+class Int8(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 1, True, "little")
 
-class Float:
+class Int16(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 2, True, "little")
+
+class Int24be(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 3, True, "big")
+
+class Int32(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 4, True, "little")
+
+class Int64(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 8, True, "little")
+
+class Int32_zero(DataNode):
+    def __init__(self, code):
+        super().__init__(code)
+        self.data = b''
+        self.size = 0
+
+    def convert_to(self):
+        return 0
+
+    def __str__(self):
+        return "int32: Zero"
+
+class UInt8(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 1, False, "little")
+
+class UInt16(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 2, False, "little")
+
+class UInt24be(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 3, False, "big")
+
+class UInt32(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 4, False, "little")
+
+class UInt64(Int):
+    def __init__(self, code, data):
+        super().__init__(code, data, 8, False, "little")
+
+class UInt32_zero(DataNode):
+    def __init__(self, code):
+        super().__init__(code)
+        self.data = b''
+        self.size = 0
+
+    def convert_to(self):
+        return 0
+
+    def __str__(self):
+        return "uint32: Zero"
+
+class UInt32_one(DataNode):
+    def __init__(self, code):
+        super().__init__(code)
+        self.data = b''
+        self.size = 0
+
+    def convert_to(self):
+        return 1
+
+    def __str__(self):
+        return "uint32: One"
+
+
+
+
+
+class Float32(DataNode):
     def __init__(self, code, data, size):
-        self.code = code
+        super().__init__(code)
         self.data = data
-        self.size = size
-        if(self.size == 4):
-            self.type = "<f"
-        elif(self.size == 8):
-            self.type = "<d"
-        else:
-            raise "No such float data type"
+        self.size = 4
+        self.type = "<f"
 
     def convert_to(self):
         return struct.unpack(self.type, self.data)
 
     def convert_from(self, value):
         self.data = struct.pack(self.type, value)
+
+    def __str__(self):
+        return "float32: " + str(self.convert_to())
+
+class Float64(DataNode):
+    def __init__(self, code, data, size):
+        super().__init__(code)
+        self.data = data
+        self.size = 8
+        self.type = "<d"
+
+    def convert_to(self):
+        return struct.unpack(self.type, self.data)
+
+    def convert_from(self, value):
+        self.data = struct.pack(self.type, value)
+
+    def __str__(self):
+        return "float64: " + str(self.convert_to())
+
+class Float32_zero(DataNode):
+    def __init__(self, code):
+        super().__init__(code)
+        self.data = b''
+        self.size = 0
+        self.type = "<f"
+
+    def convert_to(self):
+        return struct.unpack(self.type, b'\x00\x00\x00\x00')
+
+    def __str__(self):
+        return "float32: Zero"
 
 class XYCoordinate:
     def __init__(self, data):
@@ -158,7 +320,7 @@ class Angle:
 
 class UniString:
     def __init__(self, data):
-        self.code = "\x0e"
+        self.code = b'\x0e'
         self.data = data
         self.size = len(data)*2
 
@@ -170,7 +332,7 @@ class UniString:
 
 class ASCIIString:
     def __init__(self, data):
-        self.code = "\x0f"
+        self.code = b'\x0f'
         self.data = data
         self.size = len(data)
 
