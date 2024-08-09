@@ -242,10 +242,7 @@ class ESFReader:
             self.current_byte += size
 
             string_index = int.from_bytes(string_index_byte, byteorder='little', signed=False)
-            try:
-                string = self.ascii_strings[string_index]
-            except:
-                string = "ERROR: UKNOWN"
+            string = self.unicode_strings[string_index]
             string_data = UniString(string)
 
             stack_dict[-1][string_data] = None
