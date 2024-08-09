@@ -372,14 +372,14 @@ class NodeRecord:
         self.size = size
 
 
-    def __hash__(self):
-        return hash(self.tag_name)
+    # def __hash__(self):
+    #     return hash(self.tag_name)
 
-    def __eq__(self, tag_name):
-        if(self.tag_name == tag_name):
-            return True
-        else:
-            return False
+    # def __eq__(self, tag_name):
+    #     if(self.tag_name == tag_name):
+    #         return True
+    #     else:
+    #         return False
 
     def __str__(self):
         return "Record: " + self.tag_name
@@ -390,14 +390,14 @@ class ArrayRecord:
         self.tag_name = tag_name
         self.version = version
 
-    def __hash__(self):
-        return hash(self.tag_name)
+    # def __hash__(self):
+    #     return hash(self.tag_name)
 
-    def __eq__(self, tag_name):
-        if(self.tag_name == tag_name):
-            return True
-        else:
-            return False
+    # def __eq__(self, tag_name):
+    #     if(self.tag_name == tag_name):
+    #         return True
+    #     else:
+    #         return False
 
     def __str__(self):
         return "Record Array: " + self.tag_name
