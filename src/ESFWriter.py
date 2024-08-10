@@ -105,7 +105,6 @@ class ESFWriter:
             if(isinstance(next_node[0], NodeRecord)):
                 if(magic_code == Magiccode.ABCA):
                     if(next_node[2] == 0):
-                        self.byte_list += list(b'\xa0')
                         node_info = next_node[0]
                         node_content = next_node[1]
 
@@ -115,11 +114,19 @@ class ESFWriter:
                         else:
                             tag_index = len(self.tag_names)
                             self.tag_names.append(node_info.tag_name)
-                        self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
-
 
                         version = node_info.version
-                        self.byte_list += list(version.to_bytes(1, "little", signed=False))
+
+                        if(node_info.record_type == RecordType.ORIG):
+                            self.byte_list += list(b'\xa0')
+                            self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
+                            self.byte_list += list(version.to_bytes(1, "little", signed=False))
+                        else:
+                            code = 0x8000
+                            code = code | tag_index
+                            code = code | (version << 9)
+                            self.byte_list += list(code.to_bytes(2, "big", signed=False))
+
 
                         size_address = len(self.byte_list)
                         self.byte_list += list(b'\x00')
@@ -182,7 +189,7 @@ class ESFWriter:
             elif(isinstance(next_node[0], ArrayRecord)):
                 if(magic_code == Magiccode.ABCA):
                     if(next_node[2] == 0):
-                        self.byte_list += list(b'\xe0')
+
                         array_info = next_node[0]
                         array_content = next_node[1]
 
@@ -192,11 +199,18 @@ class ESFWriter:
                         else:
                             tag_index = len(self.tag_names)
                             self.tag_names.append(array_info.tag_name)
-                        self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
-
 
                         version = array_info.version
-                        self.byte_list += list(version.to_bytes(1, "little", signed=False))
+
+                        if(array_info.type_code == b'\xe0'):
+                            self.byte_list += list(b'\xe0')
+                            self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
+                            self.byte_list += list(version.to_bytes(1, "little", signed=False))
+                        else:
+                            code = 0xc000
+                            code = code | tag_index
+                            code = code | (version << 9)
+                            self.byte_list += list(code.to_bytes(2, "big", signed=False))
 
                         size_address = len(self.byte_list)
                         self.byte_list += list(b'\x00')
@@ -206,7 +220,7 @@ class ESFWriter:
                         self.byte_list += list(length_size_var)
 
 
-                        new_node = (next_node[0], next_node[1], 1, size_address)
+                        new_node = (next_node[0], next_node[1], 1, [size_address, length_size])
                         self.node_bodies.append(new_node)
 
                         contents = (next_node[1])[::-1]
@@ -237,10 +251,11 @@ class ESFWriter:
 
                         
                     else:
-                        size_address = next_node[3]
+                        size_address = next_node[3][0]
+                        length_size = next_node[3][1]
                         begin_address = size_address + 1
                         current_address = len(self.byte_list)
-                        size = current_address - begin_address
+                        size = current_address - begin_address - length_size
                         size_var, size_len = to_uintvart(size)
 
                         self.byte_list[size_address:size_address+1] = list(size_var)
@@ -447,9 +462,9 @@ class ESFWriter:
         current_address = len(self.byte_list)
         self.byte_list[self.footer_adr_header:self.footer_adr_header+4] = list(current_address.to_bytes(4, "little", signed=False))
 
-        self.write_footer(magic_code)    
-        with open("saves/mysave.txt", "wb") as binary_file:
-            binary_file.write(bytearray(self.byte_list))
+        self.write_footer(magic_code)
+
+        return bytearray(self.byte_list)
 
 
 
