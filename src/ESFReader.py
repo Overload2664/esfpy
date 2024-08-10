@@ -8,7 +8,7 @@ class ESFReader:
         self.data = data
         self.magic_code = None
         self.current_byte = 0
-        self.body = OrderedDict()
+        self.body = []
 
     def read(self):
         self.read_header()
@@ -115,7 +115,7 @@ class ESFReader:
             self.current_byte += 1
 
             bool_data = Bool(type_code, bool_byte)
-            stack_dict[-1][bool_data] = None
+            stack_dict[-1].append((bool_data, None))
             return
 
         if(type_code == b'\x02'):
@@ -125,7 +125,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int8(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x03'):
@@ -135,7 +135,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int16(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x04'):
@@ -145,7 +145,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int32(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x05'):
@@ -155,7 +155,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = Int64(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x06'):
@@ -165,7 +165,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = UInt8(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x07'):
@@ -175,7 +175,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = UInt16(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x08'):
@@ -185,7 +185,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = UInt32(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x09'):
@@ -195,7 +195,7 @@ class ESFReader:
             self.current_byte += size
 
             int_data = UInt64(type_code, int_byte)
-            stack_dict[-1][int_data] = None
+            stack_dict[-1].append((int_data, None))
             return
 
         if(type_code == b'\x0a'):
@@ -204,7 +204,7 @@ class ESFReader:
             self.current_byte += size
 
             float_data = Float32(type_code, float_byte)
-            stack_dict[-1][float_data] = None
+            stack_dict[-1].append((float_data, None))
             return
 
         if(type_code == b'\x0b'):
@@ -213,7 +213,7 @@ class ESFReader:
             self.current_byte += size
 
             float_data = Float64(type_code, float_byte)
-            stack_dict[-1][float_data] = None
+            stack_dict[-1].append((float_data, None))
             return
 
         if(type_code == b'\x0c'):
@@ -223,7 +223,7 @@ class ESFReader:
             self.current_byte += size
 
             XYCoord_data = XYCoordinate(floatXY_byte)
-            stack_dict[-1][XYCoord_data] = None
+            stack_dict[-1].append((XYCoord_data, None))
             return
 
         if(type_code == b'\x0d'):
@@ -233,7 +233,7 @@ class ESFReader:
             self.current_byte += size
 
             XYZCoord_data = XYZCoordinate(floatXYZ_byte)
-            stack_dict[-1][XYZCoord_data] = None
+            stack_dict[-1].append((XYZCoord_data, None))
             return
 
         if(type_code == b'\x0e'):
@@ -245,7 +245,7 @@ class ESFReader:
             string = self.unicode_strings[string_index]
             string_data = UniString(string)
 
-            stack_dict[-1][string_data] = None
+            stack_dict[-1].append((string_data, None))
             return
 
         if(type_code == b'\x0f'):
@@ -257,7 +257,7 @@ class ESFReader:
             string = self.ascii_strings[string_index]
             string_data = ASCIIString(string)
 
-            stack_dict[-1][string_data] = None
+            stack_dict[-1].append((string_data, None))
             return
 
         if(type_code == b'\x10'):
@@ -267,18 +267,18 @@ class ESFReader:
             self.current_byte += size
 
             angle_data = Angle(angle_byte)
-            stack_dict[-1][angle_data] = None
+            stack_dict[-1].append((angle_data, None))
             return
 
         if(self.magic_code == Magiccode.ABCA):
             if(type_code == b'\x12'):
                 bool_data = BoolTrue(type_code)
-                stack_dict[-1][bool_data] = None
+                stack_dict[-1].append((bool_data, None))
                 return
 
             if(type_code == b'\x13'):
                 bool_data = BoolFalse(type_code)
-                stack_dict[-1][bool_data] = None
+                stack_dict[-1].append((bool_data, None))
                 return
     
             if(type_code == b'\x14'):
@@ -286,7 +286,7 @@ class ESFReader:
                 signed = False
 
                 int_data = UInt32_zero(type_code)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x15'):
@@ -294,7 +294,7 @@ class ESFReader:
                 signed = False
 
                 int_data = UInt32_one(type_code)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x16'):
@@ -305,7 +305,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = UInt8(type_code, int_byte)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x17'):
@@ -316,7 +316,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = UInt16(type_code, int_byte)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x18'):
@@ -327,7 +327,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = UInt24be(type_code, int_byte)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x19'):
@@ -335,7 +335,7 @@ class ESFReader:
                 signed = True
 
                 int_data = Int32_zero(type_code)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x1a'):
@@ -346,7 +346,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = Int8(type_code, int_byte)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x1b'):
@@ -357,7 +357,7 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = Int16(type_code, int_byte)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x1c'):
@@ -368,14 +368,14 @@ class ESFReader:
                 self.current_byte += compact_size
 
                 int_data = Int24be(type_code, int_byte)
-                stack_dict[-1][int_data] = None
+                stack_dict[-1].append((int_data, None))
                 return
 
             if(type_code == b'\x1d'):
                 size = 4
 
                 float_data = Float32_zero(type_code)
-                stack_dict[-1][float_data] = None
+                stack_dict[-1].append((float_data, None))
                 return
 
     def read_body(self, initial_dict, is_root, initial_offset=None):
@@ -415,8 +415,10 @@ class ESFReader:
                 stack_offest.append(offset - 1)
 
             # self.body
-            initial_dict[root_record] = OrderedDict()
-            stack_dict.append(initial_dict[root_record])
+            initial_list = []
+            initial_dict.append((root_record, initial_list))
+            # initial_dict[root_record] = OrderedDict()
+            stack_dict.append(initial_list)
         else:
             stack_offest = [initial_offset]
             stack_dict = [initial_dict]
@@ -451,8 +453,9 @@ class ESFReader:
                     record = NodeRecord(RecordType.ORIG, tag_name, version, size)
                     stack_offest.append(offset - 1)
 
-                    stack_dict[-1][record] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][record])
+                    record_list = []
+                    stack_dict[-1].append((record, record_list))
+                    stack_dict.append(record_list)
                     continue
             else:
                 if(type_code == b'\xa0'):
@@ -471,8 +474,9 @@ class ESFReader:
                     record = NodeRecord(RecordType.TRAD, tag_name, version, size)
                     stack_offest.append(self.current_byte + size)
 
-                    stack_dict[-1][record] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][record])
+                    record_list = []
+                    stack_dict[-1].append((record, record_list))
+                    stack_dict.append(record_list)
                     continue
                 elif((type_code[0] & 0b11100000) == 0x80):
                     record_field = type_code + self.read_bytes(1, self.current_byte)
@@ -490,8 +494,9 @@ class ESFReader:
                     record = NodeRecord(RecordType.COMP, tag_name, version, size)
                     stack_offest.append(self.current_byte + size)
 
-                    stack_dict[-1][record] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][record])
+                    record_list = []
+                    stack_dict[-1].append((record, record_list))
+                    stack_dict.append(record_list)
                     continue
 
             if(type_code == b'\x0e'):
@@ -503,7 +508,7 @@ class ESFReader:
                     string = self.unicode_strings[string_index]
                     string_data = UniString(string)
 
-                    stack_dict[-1][string_data] = None
+                    stack_dict[-1].append((string_data, None))
                     continue
                 else:
                     size_byte = self.read_bytes(2, self.current_byte)
@@ -515,7 +520,7 @@ class ESFReader:
 
                     string_data = UniString(string)
 
-                    stack_dict[-1][string_data] = None
+                    stack_dict[-1].append((string_data, None))
                     continue
 
             if(type_code == b'\x0f'):
@@ -527,7 +532,7 @@ class ESFReader:
                     string = self.ascii_strings[string_index]
                     string_data = ASCIIString(string)
 
-                    stack_dict[-1][string_data] = None
+                    stack_dict[-1].append((string_data, None))
                     continue
                 else:
                     size_byte = self.read_bytes(2, self.current_byte)
@@ -539,7 +544,7 @@ class ESFReader:
 
                     string_data = ASCIIString(string)
 
-                    stack_dict[-1][string_data] = None
+                    stack_dict[-1].append((string_data, None))
                     continue
 
             # data node
@@ -562,13 +567,14 @@ class ESFReader:
 
                     array_length = (array_size // get_data_class_and_size(data_type_byte)[1])
                     array_node = ArrayNode(data_type_byte)
-                    stack_dict[-1][array_node] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][array_node])
+
+                    array_list = []
+                    stack_dict[-1].append((array_node, array_list))
+                    stack_dict.append(array_list)
 
                     for i in range(array_length):
                         self.read_data_node(data_type_byte, stack_dict)
 
-                    stack_dict[-2][array_node] = list(stack_dict[-2][array_node])
                     stack_dict.pop(-1)
                 else:
                     offset_byte = self.read_bytes(4, self.current_byte)
@@ -578,14 +584,13 @@ class ESFReader:
 
                     array_length = (array_size // get_data_class_and_size(data_type_byte)[1]) + 1
                     array_node = ArrayNode(data_type_byte)
-                    stack_dict[-1][array_node] = OrderedDict()
-                    stack_dict.append(stack_dict[-1][array_node])
+                    array_list = []
+                    stack_dict[-1].append((array_node, array_list))
+                    stack_dict.append(array_list)
 
                     for i in range(array_length):
                         self.read_data_node(data_type_byte, stack_dict)
 
-
-                    stack_dict[-2][array_node] = list(stack_dict[-2][array_node])
                     stack_dict.pop(-1)
 
 
@@ -615,7 +620,10 @@ class ESFReader:
                     self.current_byte += 4
 
                     array_record = ArrayRecord(type_code, tag_name, version)
-                    stack_dict[-1][array_record] = []
+                    # stack_dict[-1][array_record] = []
+                    array_list = []
+                    stack_dict[-1].append((array_record, array_list))
+                    # stack_dict.append(array_list)
 
                     # A small bug may appear here...
                     # while(self.current_byte < offset - 1):
@@ -625,9 +633,10 @@ class ESFReader:
                         self.current_byte += 4
                         size = offset - self.current_byte - 1
 
-                        new_dict = OrderedDict()
-                        self.read_body(new_dict, is_root=False, initial_offset=offset)
-                        stack_dict[-1][array_record].append(new_dict)
+                        new_list = []
+                        self.read_body(new_list, is_root=False, initial_offset=offset)
+                        array_list.append(new_list)
+                        # stack_dict[-1][array_record].append(new_dict)
 
                     
 
@@ -658,7 +667,9 @@ class ESFReader:
                     self.current_byte += byte_len
 
                     array_record = ArrayRecord(type_code, tag_name, version)
-                    stack_dict[-1][array_record] = []
+                    array_list = []
+                    stack_dict[-1].append((array_record, array_list))
+                    # stack_dict.append(array_list)
 
                     # A small bug may appear here...
                     # while(self.current_byte < offset - 1):
@@ -669,9 +680,9 @@ class ESFReader:
                         offset = size + self.current_byte
                         # size = offset - self.current_byte - 1 # -> offset = size + self.current_byte + 1
 
-                        new_dict = OrderedDict()
-                        self.read_body(new_dict, is_root=False, initial_offset=offset)
-                        stack_dict[-1][array_record].append(new_dict)
+                        new_list = []
+                        self.read_body(new_list, is_root=False, initial_offset=offset)
+                        array_list.append(new_list)
 
                     
                     continue
@@ -712,7 +723,9 @@ class ESFReader:
                     self.current_byte += byte_len
 
                     array_record = ArrayRecord(type_code, tag_name, version)
-                    stack_dict[-1][array_record] = []
+                    array_list = []
+                    stack_dict[-1].append((array_record, array_list))
+                    # stack_dict.append(array_list)
 
                     # A small bug may appear here...
                     # while(self.current_byte < offset - 1):
@@ -723,9 +736,9 @@ class ESFReader:
                         offset = size + self.current_byte
                         # size = offset - self.current_byte - 1 # -> offset = size + self.current_byte + 1
 
-                        new_dict = OrderedDict()
-                        self.read_body(new_dict, is_root=False, initial_offset=offset)
-                        stack_dict[-1][array_record].append(new_dict)
+                        new_list = []
+                        self.read_body(new_list, is_root=False, initial_offset=offset)
+                        array_list.append(new_list)
                     continue
 
             # This is good, it simply means that we didn't face an unsupported type code

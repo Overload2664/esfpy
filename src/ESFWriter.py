@@ -26,8 +26,6 @@ class ESFWriter:
             else:
                 size = len(data)
                 size_byte = size.to_bytes(2, "little", signed=False)
-                if(len(self.byte_list) == 576615):
-                    print(node_data.adr)
                 self.byte_list += list(size_byte)
 
                 self.byte_list += list(data.encode('utf-16'))[2:]
@@ -66,7 +64,8 @@ class ESFWriter:
 
         # Writing data
         for i in array_list:
-            data = i.data
+            # print(i)
+            data = i[0].data
             if(magic_code == Magiccode.ABCA and type_code == b'\x0e'):
                 index = None
                 if(data in self.UniStrings):
@@ -135,8 +134,13 @@ class ESFWriter:
                         new_node = (next_node[0], next_node[1], 1, size_address)
                         self.node_bodies.append(new_node)
 
-                        keys = list(next_node[1].keys())[::-1]
-                        values = list(next_node[1].values())[::-1]
+                        # keys = list(next_node[1].keys())[::-1]
+                        # values = list(next_node[1].values())[::-1]
+                        keys = [i[0] for i in next_node[1]]
+                        keys = keys[::-1]
+                        values = [i[1] for i in next_node[1]]
+                        values = values[::-1]
+
 
                         for i in range(len(keys)):
                             self.node_bodies.append((keys[i], values[i], 0, 0))
@@ -175,8 +179,10 @@ class ESFWriter:
                         new_node = (next_node[0], next_node[1], 1, size_address)
                         self.node_bodies.append(new_node)
 
-                        keys = list(next_node[1].keys())[::-1]
-                        values = list(next_node[1].values())[::-1]
+                        keys = [i[0] for i in next_node[1]]
+                        keys = keys[::-1]
+                        values = [i[1] for i in next_node[1]]
+                        values = values[::-1]
 
                         for i in range(len(keys)):
                             self.node_bodies.append((keys[i], values[i], 0, 0))
@@ -224,6 +230,7 @@ class ESFWriter:
                         self.node_bodies.append(new_node)
 
                         contents = (next_node[1])[::-1]
+                        # print(contents)
                         for content in contents:
 
                             # self.node_bodies.append((keys[i], values[i], 0, 0))
@@ -237,8 +244,13 @@ class ESFWriter:
                             array_content_end = ("ArrayContentEnd", None, None, array_content_adr)
                             self.node_bodies.append(array_content_end)
 
-                            keys = list(content.keys())[::-1]
-                            values = list(content.values())[::-1]
+                            
+                            keys = [i[0] for i in content]
+                            keys = keys[::-1]
+                            values = [i[1] for i in content]
+                            values = values[::-1]
+                            # keys = list(content.keys())[::-1]
+                            # values = list(content.values())[::-1]
 
                             for i in range(len(keys)):
 
@@ -303,8 +315,12 @@ class ESFWriter:
                             array_content_end = ("ArrayContentEnd", None, None, array_content_adr)
                             self.node_bodies.append(array_content_end)
 
-                            keys = list(content.keys())[::-1]
-                            values = list(content.values())[::-1]
+                            # keys = list(content.keys())[::-1]
+                            # values = list(content.values())[::-1]
+                            keys = [i[0] for i in content]
+                            keys = keys[::-1]
+                            values = [i[1] for i in content]
+                            values = values[::-1]
 
                             for i in range(len(keys)):
 
@@ -418,10 +434,10 @@ class ESFWriter:
         # root node code
         self.byte_list += list(b'\x80')
 
-        root_node, root_content = None, None
-        for key, value in self.ESF.items():
-            root_node = key
-            root_content = value
+        root_node, root_content = self.ESF[0]
+        # for key, value in self.ESF.items():
+        #     root_node = key
+        #     root_content = value
         tag_name = root_node.tag_name
         self.tag_names.append(tag_name)
         # Root's tag name index can always be zero
@@ -437,10 +453,15 @@ class ESFWriter:
 
 
         self.node_bodies = []
-        root_children_keys = list(root_content.keys())[::-1]
-        root_children_values = list(root_content.values())[::-1]
-        for i in range(len(root_children_keys)):
-            self.node_bodies.append((root_children_keys[i], root_children_values[i], 0, 0))
+        # root_children_keys = list(root_content.keys())[::-1]
+        # root_children_values = list(root_content.values())[::-1]
+
+        root_keys = [i[0] for i in root_content]
+        root_keys = root_keys[::-1]
+        root_values = [i[1] for i in root_content]
+        root_values = root_values[::-1]
+        for i in range(len(root_keys)):
+            self.node_bodies.append((root_keys[i], root_values[i], 0, 0))
 
         # (NodeClass, OrderedDict, should_address: 0 not yet | 1 yes, address' address)
         self.read_bodies(magic_code)
