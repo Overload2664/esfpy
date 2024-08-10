@@ -117,7 +117,7 @@ class ESFWriter:
 
                         version = node_info.version
 
-                        if(node_info.record_type == RecordType.ORIG):
+                        if(node_info.record_type == RecordType.TRAD):
                             self.byte_list += list(b'\xa0')
                             self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
                             self.byte_list += list(version.to_bytes(1, "little", signed=False))
@@ -216,11 +216,11 @@ class ESFWriter:
                         self.byte_list += list(b'\x00')
 
                         length_size = len(array_content)
-                        length_size_var, _ = to_uintvart(length_size)
+                        length_size_var, length_size_var_len = to_uintvart(length_size)
                         self.byte_list += list(length_size_var)
 
 
-                        new_node = (next_node[0], next_node[1], 1, [size_address, length_size])
+                        new_node = (next_node[0], next_node[1], 1, [size_address, length_size_var_len])
                         self.node_bodies.append(new_node)
 
                         contents = (next_node[1])[::-1]
@@ -252,10 +252,10 @@ class ESFWriter:
                         
                     else:
                         size_address = next_node[3][0]
-                        length_size = next_node[3][1]
-                        begin_address = size_address + 1
+                        length_size_var_len = next_node[3][1]
+                        begin_address = size_address + 1 + length_size_var_len
                         current_address = len(self.byte_list)
-                        size = current_address - begin_address - length_size
+                        size = current_address - begin_address
                         size_var, size_len = to_uintvart(size)
 
                         self.byte_list[size_address:size_address+1] = list(size_var)

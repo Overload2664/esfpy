@@ -9,12 +9,12 @@ class ESFReader:
         self.magic_code = None
         self.current_byte = 0
         self.body = OrderedDict()
-        self.read()
 
     def read(self):
         self.read_header()
         self.read_footer()
         self.read_body(initial_dict=self.body, is_root=True)
+        return self.body
 
     def read_header(self):
         self.read_magic_code()
@@ -729,6 +729,7 @@ class ESFReader:
                     continue
 
             # This is good, it simply means that we didn't face an unsupported type code
+            print("ERROR")
             break
             
 
