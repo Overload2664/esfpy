@@ -117,7 +117,7 @@ class ESFWriter:
 
                         version = node_info.version
 
-                        if(node_info.record_type == RecordType.TRAD):
+                        if(True):
                             self.byte_list += list(b'\xa0')
                             self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
                             self.byte_list += list(version.to_bytes(1, "little", signed=False))
@@ -202,7 +202,7 @@ class ESFWriter:
 
                         version = array_info.version
 
-                        if(array_info.type_code == b'\xe0'):
+                        if(True):
                             self.byte_list += list(b'\xe0')
                             self.byte_list += list(tag_index.to_bytes(2, "little", signed=False))
                             self.byte_list += list(version.to_bytes(1, "little", signed=False))
