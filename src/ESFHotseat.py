@@ -8,11 +8,44 @@ from ESFWriter import ESFWriter
 from ESF import ESF
 from ESFSave import ESFSave
 
+SHOGUN_NAME_INDEX = 2
+SHOGUN_HUMAN_INDEX = 7
+SHOGUN_PLAYABLE_INDEX = 1
+
+ATTILA_NAME_INDEX = 1
+ATTILA_HUMAN_INDEX = 5
+ATTILA_PLAYABLE_INDEX = 1
+
 class ESFHotseat(ESFSave):
     # game: shogun,rome,attila
     def __init__(self, game="shogun"):
         super().__init__()
         self.game = game
+
+    def get_name_index(self):
+        if(self.game == "shogun"):
+            return SHOGUN_NAME_INDEX
+        elif(self.game == "attila"):
+            return ATTILA_NAME_INDEX
+        else:
+            return None
+
+    def get_human_index(self):
+        if(self.game == "shogun"):
+            return SHOGUN_HUMAN_INDEX
+        elif(self.game == "attila"):
+            return SHOGUN_HUMAN_INDEX
+        else:
+            return None
+
+    def get_playable_index(self):
+        if(self.game == "shogun"):
+            return SHOGUN_PLAYABLE_INDEX
+        elif(self.game == "attila"):
+            return ATTILA_PLAYABLE_INDEX
+        else:
+            return None
+
     
     def increment_turn(self):
         WORLD = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"])[1]
@@ -27,9 +60,7 @@ class ESFHotseat(ESFSave):
 
         for i in range(len(FACTION_ARRAY)):
             # 1 for Attila
-            name_index = 2
-            if(self.game == "attila"):
-                name_index = 1
+            name_index = self.get_name_index()
             real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
             faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
             faction_name = faction_name_tup[0].data
@@ -49,18 +80,14 @@ class ESFHotseat(ESFSave):
         FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
 
         for i in range(len(FACTION_ARRAY)):
-            name_index = 2
-            if(self.game == "attila"):
-                name_index = 1
+            name_index = self.get_name_index()
             real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
 
             faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
             faction_name = faction_name_tup[0].data
             if(faction_name in chosen_factions):
                 # 5 for Attila
-                bool_human_index = 7
-                if(self.game == "attila"):
-                    bool_human_index = 5
+                bool_human_index = self.get_human_index()
                 real_bool_human_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], bool_human_index)
                 
 
@@ -76,17 +103,13 @@ class ESFHotseat(ESFSave):
         factions_nature = []
 
         for i in range(len(FACTION_ARRAY)):
-            name_index = 2
-            if(self.game == "attila"):
-                name_index = 1
+            name_index = self.get_name_index()
             real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
 
             faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
             faction_name = faction_name_tup[0].data
             if(faction_name in chosen_factions):
-                bool_human_index = 7
-                if(self.game == "atilla"):
-                    bool_human_index = 5
+                bool_human_index = self.get_human_index()
                 real_bool_human_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], bool_human_index)
 
                 FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
@@ -99,16 +122,14 @@ class ESFHotseat(ESFSave):
         FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
 
         for i in range(len(FACTION_ARRAY)):
-            name_index = 2
-            if(self.game == "attila"):
-                name_index = 1
+            name_index = self.get_name_index()
             real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
 
             faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
             faction_name = faction_name_tup[0].data
             if(faction_name in chosen_factions):
                 # Same for Attila
-                bool_playable_index = 1
+                bool_playable_index = self.get_playable_index()
                 real_bool_playable_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP"], bool_playable_index)
 
                 CAMPAIGN_PLAYER_SETUP = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP"])
@@ -124,15 +145,13 @@ class ESFHotseat(ESFSave):
         factions_nature = []
 
         for i in range(len(FACTION_ARRAY)):
-            name_index = 2
-            if(self.game == "attila"):
-                name_index = 1
+            name_index = self.get_name_index()
             real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
 
             faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
             faction_name = faction_name_tup[0].data
             if(faction_name in chosen_factions):
-                bool_playable_index = 1
+                bool_playable_index = self.get_playable_index()
                 real_bool_playable_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP"], bool_playable_index)
 
                 CAMPAIGN_PLAYER_SETUP = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP"])
@@ -180,9 +199,7 @@ class ESFHotseat(ESFSave):
         for i in range(len(FACTION_ARRAY)):
             FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
             has_shroud = False
-            name_index = 2
-            if(self.game == "attila"):
-                name_index = 1
+            name_index = self.get_name_index()
             real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
 
             faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
@@ -201,8 +218,8 @@ class ESFHotseat(ESFSave):
                     last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "MORGUE")
                     # +1 for Attila
                     new_place = last_record + 2
-                    if(self.game == "attila"):
-                        new_place = last_record + 2
+                    # if(self.game == "attila"):
+                    #     new_place = last_record + 2
                     FACTION[1][new_place:new_place] = [shroud]
                     # print(FACTION[1][new_place])
                     
@@ -247,9 +264,7 @@ class ESFHotseat(ESFSave):
         for i in range(len(FACTION_ARRAY)):
             FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
             has_cam_missions = False
-            name_index = 2
-            if(self.game == "attila"):
-                name_index = 1
+            name_index = self.get_name_index()
             real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
 
             faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
@@ -266,9 +281,12 @@ class ESFHotseat(ESFSave):
                     else:
                         cam_missions = self.get_cam_missions()
                     # GOVERNMENT for Attila
-                    last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "FAMILY")
-                    new_place = last_record
-                    if(self.game == "attila"):
+                    last_record = None
+                    new_place = None
+                    if(self.game == "shogun"):
+                        last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "FAMILY")
+                        new_place = last_record
+                    elif(self.game == "attila"):
                         last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "GOVERNMENT")
                         new_place = last_record + 1
                     FACTION[1][new_place:new_place] = [cam_missions]
