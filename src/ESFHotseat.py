@@ -25,7 +25,7 @@ class ESFHotseat(ESFSave):
     def get_name_index(self):
         if(self.game == "shogun"):
             return SHOGUN_NAME_INDEX
-        elif(self.game == "attila"):
+        elif(self.game == "attila" or self.game == "rome"):
             return ATTILA_NAME_INDEX
         else:
             return None
@@ -33,15 +33,15 @@ class ESFHotseat(ESFSave):
     def get_human_index(self):
         if(self.game == "shogun"):
             return SHOGUN_HUMAN_INDEX
-        elif(self.game == "attila"):
-            return SHOGUN_HUMAN_INDEX
+        elif(self.game == "attila" or self.game == "rome"):
+            return ATTILA_HUMAN_INDEX
         else:
             return None
 
     def get_playable_index(self):
         if(self.game == "shogun"):
             return SHOGUN_PLAYABLE_INDEX
-        elif(self.game == "attila"):
+        elif(self.game == "attila" or self.game == "rome"):
             return ATTILA_PLAYABLE_INDEX
         else:
             return None
@@ -71,7 +71,7 @@ class ESFHotseat(ESFSave):
     def choose_vision(self, faction_name):
         # Same thing for Attila
         CAMPAIGN_SETUP_LOCAL = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_SETUP_LOCAL"])[1]
-        if(self.game == "attila"):
+        if(self.game == "attila" or self.game == "rome"):
             CAMPAIGN_SETUP_LOCAL[0] = (ASCIIString(faction_name), None)
         else:
             CAMPAIGN_SETUP_LOCAL[0] = (UniString(faction_name), None)
@@ -286,7 +286,7 @@ class ESFHotseat(ESFSave):
                     if(self.game == "shogun"):
                         last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "FAMILY")
                         new_place = last_record
-                    elif(self.game == "attila"):
+                    elif(self.game == "attila" or self.game == "rome"):
                         last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "GOVERNMENT")
                         new_place = last_record + 1
                     FACTION[1][new_place:new_place] = [cam_missions]
