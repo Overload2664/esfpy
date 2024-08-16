@@ -25,13 +25,13 @@ class ESFHotseat(ESFSave):
     def get_name_index(self):
         if(self.game == "shogun"):
             return SHOGUN_NAME_INDEX
-        elif(self.game == "attila" or self.game == "rome"):
+        elif(self.game == "attila" or self.game == "rome" or self.game == "empire" or self.game == "napoleon"):
             return ATTILA_NAME_INDEX
         else:
             return None
 
     def get_human_index(self):
-        if(self.game == "shogun"):
+        if(self.game == "shogun" or self.game == "empire" or self.game == "napoleon"):
             return SHOGUN_HUMAN_INDEX
         elif(self.game == "attila" or self.game == "rome"):
             return ATTILA_HUMAN_INDEX
@@ -41,7 +41,7 @@ class ESFHotseat(ESFSave):
     def get_playable_index(self):
         if(self.game == "shogun"):
             return SHOGUN_PLAYABLE_INDEX
-        elif(self.game == "attila" or self.game == "rome"):
+        elif(self.game == "attila" or self.game == "rome" or self.game == "empire" or self.game == "napoleon"):
             return ATTILA_PLAYABLE_INDEX
         else:
             return None
