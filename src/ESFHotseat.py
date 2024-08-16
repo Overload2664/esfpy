@@ -46,14 +46,6 @@ class ESFHotseat(ESFSave):
         else:
             return None
 
-    
-    def increment_turn(self):
-        WORLD = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"])[1]
-        prev_turn = WORLD[1][0].convert_to()
-        prev_turn += 1
-        prev_turn_byte = prev_turn.to_bytes(4, "little", signed=False)
-        WORLD[1] = (UInt32(b'\x08', prev_turn_byte), None)
-
     def get_all_factions(self):
         faction_names = []
         FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
@@ -67,6 +59,49 @@ class ESFHotseat(ESFSave):
             faction_names.append(faction_name)
 
         return faction_names
+    
+    def increment_turn(self, number=1):
+        WORLD = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"])[1]
+        prev_turn = WORLD[1][0].convert_to()
+        prev_turn += number
+        prev_turn_byte = prev_turn.to_bytes(4, "little", signed=False)
+        WORLD[1] = (UInt32(b'\x08', prev_turn_byte), None)
+
+    def get_current_turn(self):
+        WORLD = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"])[1]
+        current_turn = WORLD[1][0].convert_to()
+        return current_turn
+
+    def change_turn(self, turn):
+        WORLD = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"])[1]
+        turn_byte = turn.to_bytes(4, "little", signed=False)
+        WORLD[1] = (UInt32(b'\x08', turn_byte), None)
+
+    def change_turn_order(self, factions):
+        faction_element = []
+        FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])
+        faction_array_index = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"], "FACTION_ARRAY")
+        WORLD = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"])[1]
+
+        faction_array_record = FACTION_ARRAY[0]
+        faction_array_content = []
+
+        for faction in factions:
+            for i in range(len(FACTION_ARRAY[1])):
+                # 1 for Attila
+                name_index = self.get_name_index()
+                faction_con = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i])
+                
+                real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
+                faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
+                faction_name = faction_name_tup[0].data
+                if(faction_name == faction):
+                    faction_array_content.append(faction_con)
+                    break
+
+        
+        new_faction_array = (faction_array_record, faction_array_content)
+        WORLD[faction_array_index] = new_faction_array
 
     def choose_vision(self, faction_name):
         # Same thing for Attila
