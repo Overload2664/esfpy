@@ -139,9 +139,34 @@ class HotseatGUI(tk.Tk):
         self.remove_widgets()
         vision_var = tk.StringVar(value=self.vision)
 
+        # Create a frame to hold the radio buttons and scrollbar
+        radio_frame = tk.Frame(self)
+        radio_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Create a canvas inside the frame
+        self.canvas = tk.Canvas(radio_frame)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Add a scrollbar to the canvas
+        scrollbar = ttk.Scrollbar(radio_frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Configure the canvas to use the scrollbar
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion = self.canvas.bbox("all")))
+
+        # Create a frame inside the canvas to hold the radio buttons
+        self.inner_frame = tk.Frame(self.canvas)
+
+        # Add the inner frame to the canvas window
+        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
+
+        self.all_widgets += [radio_frame, self.canvas, scrollbar, self.inner_frame]
+
         for faction_index in range(len(self.all_factions)):
             faction = self.all_factions[faction_index]
-            radio_button = tk.Radiobutton(self, text=faction, variable=vision_var, value=faction)
+            # Parent the radio buttons to the inner_frame
+            radio_button = tk.Radiobutton(self.inner_frame, text=f"{faction_index + 1}. {faction}", variable=vision_var, value=faction)
 
             self.all_widgets.append(radio_button)
             radio_button.pack()
