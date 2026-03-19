@@ -185,13 +185,37 @@ class HotseatGUI(tk.Tk):
     def _set_playable_widgets(self):
         self.remove_widgets()
         bool_vars = []
-        # check_buttons = []
+        # check_buttons = [] # This was commented out, so I'm keeping it commented.
+
+        # Create a frame to hold the checkbuttons and scrollbar
+        check_button_frame = tk.Frame(self)
+        check_button_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Create a canvas inside the frame
+        self.canvas = tk.Canvas(check_button_frame)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Add a scrollbar to the canvas
+        scrollbar = ttk.Scrollbar(check_button_frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Configure the canvas to use the scrollbar
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion = self.canvas.bbox("all")))
+
+        # Create a frame inside the canvas to hold the checkbuttons
+        self.inner_frame = tk.Frame(self.canvas)
+
+        # Add the inner frame to the canvas window
+        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
+        self.all_widgets += [check_button_frame, self.canvas, scrollbar, self.inner_frame]
 
         for faction_index in range(len(self.all_factions)):
             bool_var = tk.BooleanVar(value=self.all_playability[faction_index])
-            check_button = tk.Checkbutton(self, text=self.all_factions[faction_index], variable=bool_var)
+            # Parent the checkbuttons to the inner_frame
+            check_button = tk.Checkbutton(self.inner_frame, text=f"{faction_index + 1}. {self.all_factions[faction_index]}", variable=bool_var)
 
-            # check_buttons.append(check_button)
+            # check_buttons.append(check_button) # Keeping this commented as in the original
             bool_vars.append(bool_var)
             self.all_widgets.append(check_button)
             check_button.pack()
