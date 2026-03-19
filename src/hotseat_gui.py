@@ -53,7 +53,7 @@ class HotseatGUI(tk.Tk):
                 )
 
             try:
-                self.hotseat_reader = ESFHotseat("shogun")
+                self.hotseat_reader = ESFHotseat("attila")
                 self.hotseat_reader.read_file(self.selected_file)
                 self._get_info()
                 self._create_options_widgets()

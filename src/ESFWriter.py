@@ -44,7 +44,7 @@ class ESFWriter:
                 size_byte = size.to_bytes(2, "little", signed=False)
                 self.byte_list += list(size_byte)
                 self.byte_list += list(data.encode('utf-8'))
-        else:       
+        else:
             self.byte_list += list(node_data.data)
 
     def write_data_array(self, array_data, array_list, magic_code):
@@ -54,6 +54,7 @@ class ESFWriter:
 
         # Writing size/offset
         size = len(array_list) * get_data_class_and_size(array_data.node_type)[1]
+        # print(len(self.byte_list))
         if(magic_code == Magiccode.ABCA):
             size_var_byte = to_uintvart(size)[0]
             self.byte_list += list(size_var_byte)
@@ -86,6 +87,7 @@ class ESFWriter:
                 self.byte_list += list(index_byte)
             else:
                 self.byte_list += list(data)
+        # print(len(self.byte_list))
 
 
     def read_bodies(self, magic_code):
@@ -485,6 +487,9 @@ class ESFWriter:
 
         self.write_footer(magic_code)
 
+        # for i in self.byte_list:
+        #     if isinstance(i, str):
+        #         print(i)
         return bytearray(self.byte_list)
 
 
