@@ -10,9 +10,17 @@ from ESFtypes import from_uintvart, to_uintvart, Magiccode
 from ESF import ESF
 from ESFHotseat import ESFHotseat
 
+SUPPORTED_GAMES = [
+    "shogun",
+    "attila"
+]
+
+DEFAULT_GAME = "shogun"
+
 class HotseatGUI(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.game_var = tk.StringVar(value=DEFAULT_GAME)
         self.hotseat_reader = None
         self.selected_file = None
         self.vision = ""
@@ -30,6 +38,7 @@ class HotseatGUI(tk.Tk):
 
     def _create_file_widgets(self):
         self.remove_widgets()
+
         self.file_frame = ttk.LabelFrame(self, text="Save File Selection")
         self.select_button = ttk.Button(self.file_frame, text="Choose Save File", command=self.choose_file)
         self.file_label = ttk.Label(self.file_frame, text="No file selected", width=50)
@@ -39,6 +48,12 @@ class HotseatGUI(tk.Tk):
         self.file_frame.pack(fill="x", padx=20, pady=10)
         self.select_button.grid(row=0, column=0, padx=5, pady=5)
         self.file_label.grid(row=0, column=1, padx=5, pady=5)
+
+        for game in SUPPORTED_GAMES:
+            radio_button = tk.Radiobutton(self, text=game, variable=self.game_var, value=game)
+
+            self.all_widgets.append(radio_button)
+            radio_button.pack()
 
     def choose_file(self):
         """Open file dialog, display selected file, and update UI."""
@@ -53,7 +68,7 @@ class HotseatGUI(tk.Tk):
                 )
 
             try:
-                self.hotseat_reader = ESFHotseat("attila")
+                self.hotseat_reader = ESFHotseat(game=self.game_var.get())
                 self.hotseat_reader.read_file(self.selected_file)
                 self._get_info()
                 self._create_options_widgets()
