@@ -340,6 +340,12 @@ class HotseatGUI(tk.Tk):
         self.hotseat_reader.choose_vision(self.vision)
         for i in range(len(self.all_factions)):
             faction = self.all_factions[i]
+
+            was_playable = self.hotseat_reader.get_factions_playability(self.all_factions)[i][1]
+            if(not was_playable):
+                self.hotseat_reader.put_shroud([faction])
+                self.hotseat_reader.put_cam_missions([faction])
+            
             self.hotseat_reader.mark_factions_as_playable([faction], self.all_playability[i])
             self.hotseat_reader.mark_factions_as_human([faction], self.all_humanity[i])
 
