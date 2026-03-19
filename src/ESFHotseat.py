@@ -212,6 +212,18 @@ class ESFHotseat(ESFSave):
 
         return None
 
+    def get_shroud_index(self):
+        FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
+
+        for i in range(len(FACTION_ARRAY)):
+            FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
+            for node_index in range(len(FACTION[1])):
+                node = FACTION[1][node_index]
+                if(isinstance(node[0], NodeRecord) and node[0].tag_name == "CAMPAIGN_SHROUD"):
+                    return node_index
+
+        return None
+
     def get_empty_shroud(self):
         old_shroud = self.get_shroud()
         if(old_shroud == None):
@@ -255,9 +267,9 @@ class ESFHotseat(ESFSave):
                         shroud = self.get_empty_shroud()
                     else:
                         shroud = self.get_shroud()
-                    last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "MORGUE")
+                    # last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "MORGUE")
                     # +1 for Attila
-                    new_place = last_record + 2
+                    new_place = self.get_shroud_index()
                     # if(self.game == "attila"):
                     #     new_place = last_record + 2
                     FACTION[1][new_place:new_place] = [shroud]
@@ -271,6 +283,18 @@ class ESFHotseat(ESFSave):
             for node in FACTION[1]:
                 if(isinstance(node[0], NodeRecord) and node[0].tag_name == "CAMPAIGN_MISSION_MANAGER"):
                     return node
+
+        return None
+
+    def get_cam_missions_index(self):
+        FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
+
+        for i in range(len(FACTION_ARRAY)):
+            FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
+            for node_index in range(len(FACTION[1])):
+                node = FACTION[1][node_index]
+                if(isinstance(node[0], NodeRecord) and node[0].tag_name == "CAMPAIGN_MISSION_MANAGER"):
+                    return node_index
 
         return None
 
@@ -321,13 +345,13 @@ class ESFHotseat(ESFSave):
                     else:
                         cam_missions = self.get_cam_missions()
                     # GOVERNMENT for Attila
-                    last_record = None
-                    new_place = None
-                    if(self.game == "shogun"):
-                        last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "FAMILY")
-                        new_place = last_record
-                    elif(self.game == "attila" or self.game == "rome"):
-                        last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "GOVERNMENT")
-                        new_place = last_record + 1
+                    # last_record = None
+                    new_place = self.get_cam_missions_index()
+                    # if(self.game == "shogun"):
+                    #     last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "FAMILY")
+                    #     new_place = last_record
+                    # elif(self.game == "attila" or self.game == "rome"):
+                    #     last_record = self.main_esf.get_record_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], "GOVERNMENT")
+                    #     new_place = last_record + 1
                     FACTION[1][new_place:new_place] = [cam_missions]
     
