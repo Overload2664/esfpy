@@ -111,6 +111,11 @@ class ESFHotseat(ESFSave):
         else:
             CAMPAIGN_SETUP_LOCAL[0] = (UniString(faction_name), None)
 
+    def get_vision(self):
+        CAMPAIGN_SETUP_LOCAL = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_SETUP_LOCAL"])[1]
+        faction_name = CAMPAIGN_SETUP_LOCAL[0][0].data
+        return faction_name
+
     def mark_factions_as_human(self, chosen_factions, is_human):
         FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
 
