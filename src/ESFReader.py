@@ -41,7 +41,7 @@ class ESFReader:
         elif(magic_code == b'\xcd\xab'):
             self.magic_code = Magiccode.ABCD
         else:
-            raise "File format not supported."
+            raise TypeError("File format not supported.")
 
         self.current_byte += 4
 
