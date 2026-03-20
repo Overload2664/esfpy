@@ -93,11 +93,12 @@ class HotseatGUI(tk.Tk):
         self.no_all_playable_button = ttk.Button(self.options_frame, text="Mark All As Not Playable", command=self.mark_all_as_not_playable)
         self.all_human_button = ttk.Button(self.options_frame, text="Mark All As Human", command=self.mark_all_as_human)
         self.no_all_human_button = ttk.Button(self.options_frame, text="Mark All As Not Human", command=self.mark_all_as_not_human)
+        self.change_turn_button = ttk.Button(self.options_frame, text="Change Turn", command=self._change_turn_widgets)
 
         self.save_button = ttk.Button(self, text="Save", command=self.save_to_file)
         self.back_button = ttk.Button(self, text="Back", command=self._create_file_widgets)
 
-        self.all_widgets += [self.options_frame, self.get_all_factions_button, self.all_playable_button, self.no_all_playable_button, self.all_human_button, self.no_all_human_button, self.save_button, self.back_button, self.playable_button, self.humanity_button, self.vision_button]
+        self.all_widgets += [self.options_frame, self.get_all_factions_button, self.all_playable_button, self.no_all_playable_button, self.all_human_button, self.no_all_human_button, self.save_button, self.back_button, self.playable_button, self.humanity_button, self.vision_button, self.change_turn_button]
 
         # self.title_label.pack(pady=10)
         self.options_frame.pack(fill="x", padx=20, pady=10)
@@ -109,6 +110,7 @@ class HotseatGUI(tk.Tk):
         self.no_all_playable_button.pack(pady=10)
         self.all_human_button.pack(pady=10)
         self.no_all_human_button.pack(pady=10)
+        self.change_turn_button.pack(pady=10)
         
         self.save_button.pack(pady=10)
         self.back_button.pack(pady=10)
@@ -137,7 +139,8 @@ class HotseatGUI(tk.Tk):
         # Configure scrollbar to control the listbox
         self.scrollbar.config(command=self.listbox.yview)
 
-        self.listbox.insert(tk.END, "Turn Order: " + self.all_factions[self.turn_order])
+        if(self.turn_order < len(self.all_factions)):
+            self.listbox.insert(tk.END, "Turn Order: " + self.all_factions[self.turn_order])
         self.listbox.insert(tk.END, "Turn Number: " + str(self.turn_order + 1))
         self.listbox.insert(tk.END, "Vision: " + self.vision)
         for faction_index in range(len(self.all_factions)):
@@ -149,6 +152,28 @@ class HotseatGUI(tk.Tk):
         self.back_button = ttk.Button(self, text="Back", command=self._create_options_widgets)
         self.back_button.pack(side=tk.LEFT, padx=5)
         self.all_widgets.append(self.back_button)
+
+    def _change_turn_widgets(self):
+        self.remove_widgets()
+
+        turn_label = tk.Label(self, text="Turn:")
+        turn_label.pack()
+        self.all_widgets.append(turn_label)
+            
+        turn_entry = tk.Entry(self)
+        turn_entry.pack()
+        self.all_widgets.append(turn_entry)
+
+        self.back_button = ttk.Button(self, text="Back", command=self._create_options_widgets)
+        self.back_button.pack(pady=10)
+        self.all_widgets.append(self.back_button)
+
+        def save_turn_number():
+            self.turn_order = int(turn_entry.get()) - 1
+
+        self.save_button = ttk.Button(self, text="Save", command=save_turn_number)
+        self.save_button.pack(pady=2)
+        self.all_widgets.append(self.save_button)
 
     def _set_vision_widgets(self):
         self.remove_widgets()
@@ -353,6 +378,7 @@ class HotseatGUI(tk.Tk):
 
     def _save_info(self):
         self.hotseat_reader.choose_vision(self.vision)
+        self.hotseat_reader.change_turn(self.turn_order)
         for i in range(len(self.all_factions)):
             faction = self.all_factions[i]
 
