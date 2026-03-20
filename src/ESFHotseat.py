@@ -12,9 +12,30 @@ SHOGUN_NAME_INDEX = 2
 SHOGUN_HUMAN_INDEX = 7
 SHOGUN_PLAYABLE_INDEX = 1
 
+FALL_NAME_INDEX = 2
+FALL_HUMAN_INDEX = 7
+FALL_PLAYABLE_INDEX = 1
+
 ATTILA_NAME_INDEX = 1
 ATTILA_HUMAN_INDEX = 5
 ATTILA_PLAYABLE_INDEX = 1
+
+# Notes:
+"""
+Atilla:
+Currently the way this is done recruitment isn't possible. We have to change the values at:
+WORLD -> FACTION_ARRAY -> FACTION -> CAMPAIGN_PLAYER_SETUP -> CAMPAIGN_PLAYER_SETUP_MODIFIABLES
+to:
+-2
+-2
+-2
+1
+"""
+
+"""
+Fall of the Samurai:
+Apparently the values are a little different?
+"""
 
 class ESFHotseat(ESFSave):
     # game: shogun,rome,attila
@@ -137,6 +158,10 @@ class ESFHotseat(ESFSave):
                     FACTION[1][real_bool_human_index] = (BoolTrue(b'\x12'), None)
                 else:
                     FACTION[1][real_bool_human_index] = (BoolFalse(b'\x13'), None)
+
+        # To enable recruiting
+        if(self.game == "attila"):
+            self.change_modifiers(chosen_factions, is_human)
 
     def get_factions_nature(self, chosen_factions):
         FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
@@ -355,3 +380,51 @@ class ESFHotseat(ESFSave):
                     #     new_place = last_record + 1
                     FACTION[1][new_place:new_place] = [cam_missions]
     
+    # To be able too recruit armies in Atilla
+    def change_modifiers(self, chosen_factions, to_human=True):
+        FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
+        factions_nature = []
+
+        for i in range(len(FACTION_ARRAY)):
+            FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
+            CAMPAIGN_PLAYER_SETUP_MODIFIABLES = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP", "CAMPAIGN_PLAYER_SETUP_INGAME_MODIFIABLES"])
+
+            name_index = self.get_name_index()
+            real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
+
+            faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
+            faction_name = faction_name_tup[0].data
+            if(faction_name in chosen_factions):
+                if(to_human):
+                    integer = Int32(b'\x04', b'')
+                    integer.convert_from(-2)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][0] = (integer, None)
+
+                    integer = Int32(b'\x04', b'')
+                    integer.convert_from(-2)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][1] = (integer, None)
+
+                    integer = Int32(b'\x04', b'')
+                    integer.convert_from(-2)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][2] = (integer, None)
+
+                    integer = UInt32(b'\x08', b'')
+                    integer.convert_from(1)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][3] = (integer, None)
+                else:
+                    integer = Int32(b'\x04', b'')
+                    integer.convert_from(2)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][0] = (integer, None)
+
+                    integer = Int32(b'\x04', b'')
+                    integer.convert_from(2)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][1] = (integer, None)
+
+                    integer = Int32(b'\x04', b'')
+                    integer.convert_from(2)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][2] = (integer, None)
+
+                    integer = UInt32(b'\x08', b'')
+                    integer.convert_from(0)
+                    CAMPAIGN_PLAYER_SETUP_MODIFIABLES[1][3] = (integer, None)
+
