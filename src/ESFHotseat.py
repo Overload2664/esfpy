@@ -12,10 +12,6 @@ SHOGUN_NAME_INDEX = 2
 SHOGUN_HUMAN_INDEX = 7
 SHOGUN_PLAYABLE_INDEX = 1
 
-FALL_NAME_INDEX = 2
-FALL_HUMAN_INDEX = 7
-FALL_PLAYABLE_INDEX = 1
-
 ATTILA_NAME_INDEX = 1
 ATTILA_HUMAN_INDEX = 5
 ATTILA_PLAYABLE_INDEX = 1
@@ -160,7 +156,7 @@ class ESFHotseat(ESFSave):
                     FACTION[1][real_bool_human_index] = (BoolFalse(b'\x13'), None)
 
         # To enable recruiting
-        if(self.game == "attila"):
+        if(self.game == "attila" or self.game == "rome"):
             self.change_modifiers(chosen_factions, is_human)
 
     def get_factions_nature(self, chosen_factions):
