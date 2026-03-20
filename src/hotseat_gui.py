@@ -11,8 +11,9 @@ from ESF import ESF
 from ESFHotseat import ESFHotseat
 
 SUPPORTED_GAMES = [
-    "shogun",
-    "attila"
+    ("shogun", "Shogun II"),
+    ("rome", "Rome II"),
+    ("attila", "Attila")
 ]
 
 DEFAULT_GAME = "shogun"
@@ -50,7 +51,9 @@ class HotseatGUI(tk.Tk):
         self.file_label.grid(row=0, column=1, padx=5, pady=5)
 
         for game in SUPPORTED_GAMES:
-            radio_button = tk.Radiobutton(self, text=game, variable=self.game_var, value=game)
+            code_name = game[0]
+            title_name = game[1]
+            radio_button = tk.Radiobutton(self, text=title_name, variable=self.game_var, value=code_name)
 
             self.all_widgets.append(radio_button)
             radio_button.pack()
@@ -372,6 +375,9 @@ class HotseatGUI(tk.Tk):
         self.all_factions = self.hotseat_reader.get_all_factions()
         self.vision = self.hotseat_reader.get_vision()
         self.turn_order = self.hotseat_reader.get_current_turn()
+
+        self.all_playability = []
+        self.all_humanity = []
         for faction in self.all_factions:
             self.all_playability.append(self.hotseat_reader.get_factions_playability([faction])[0][1])
             self.all_humanity.append(self.hotseat_reader.get_factions_nature([faction])[0][1])
