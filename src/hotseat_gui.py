@@ -1,4 +1,5 @@
 import os
+import sys
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -404,4 +405,4 @@ if __name__ == "__main__":
     app = HotseatGUI()
     app.mainloop()
 
-    exit(0)
+    sys.exit(0)
