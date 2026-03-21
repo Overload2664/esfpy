@@ -270,7 +270,7 @@ class ESFHotseat(ESFSave):
         
         # lol.get_shroud()[1][4][1]
         # Doing all these copies to avoid doing unnecessary reference bugs
-        if(self.game != "empire"):
+        if(self.game != "empire" and self.game != "napoleon"):
             old_content = old_shroud[1]
             old_blocks = old_content[4][1][0]
 
