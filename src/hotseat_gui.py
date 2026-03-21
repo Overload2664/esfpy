@@ -12,6 +12,7 @@ from ESF import ESF
 from ESFHotseat import ESFHotseat
 
 SUPPORTED_GAMES = [
+    ("empire", "Empire"),
     ("shogun", "Shogun II"),
     ("rome", "Rome II"),
     ("attila", "Attila")

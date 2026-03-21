@@ -8,6 +8,10 @@ from ESFWriter import ESFWriter
 from ESF import ESF
 from ESFSave import ESFSave
 
+EMPIRE_NAME_INDEX = 1
+EMPIRE_HUMAN_INDEX = 7
+EMPIRE_PLAYABLE_INDEX = 1
+
 SHOGUN_NAME_INDEX = 2
 SHOGUN_HUMAN_INDEX = 7
 SHOGUN_PLAYABLE_INDEX = 1
@@ -42,24 +46,30 @@ class ESFHotseat(ESFSave):
     def get_name_index(self):
         if(self.game == "shogun"):
             return SHOGUN_NAME_INDEX
-        elif(self.game == "attila" or self.game == "rome" or self.game == "empire" or self.game == "napoleon"):
+        elif(self.game == "attila" or self.game == "rome"):
             return ATTILA_NAME_INDEX
+        elif(self.game == "empire" or self.game == "napoleon"):
+            return EMPIRE_NAME_INDEX
         else:
             return None
 
     def get_human_index(self):
-        if(self.game == "shogun" or self.game == "empire" or self.game == "napoleon"):
+        if(self.game == "shogun"):
             return SHOGUN_HUMAN_INDEX
         elif(self.game == "attila" or self.game == "rome"):
             return ATTILA_HUMAN_INDEX
+        elif(self.game == "empire" or self.game == "napoleon"):
+            return EMPIRE_HUMAN_INDEX
         else:
             return None
 
     def get_playable_index(self):
         if(self.game == "shogun"):
             return SHOGUN_PLAYABLE_INDEX
-        elif(self.game == "attila" or self.game == "rome" or self.game == "empire" or self.game == "napoleon"):
+        elif(self.game == "attila" or self.game == "rome"):
             return ATTILA_PLAYABLE_INDEX
+        elif(self.game == "empire" or self.game == "napoleon"):
+            return EMPIRE_PLAYABLE_INDEX
         else:
             return None
 
@@ -151,9 +161,13 @@ class ESFHotseat(ESFSave):
                 FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
                 # print(FACTION[1][real_bool_human_index])
                 if(is_human):
-                    FACTION[1][real_bool_human_index] = (BoolTrue(b'\x12'), None)
+                    bool_true = Bool(b'\x01', b'')
+                    bool_true.convert_from(True)
+                    FACTION[1][real_bool_human_index] = (bool_true, None)
                 else:
-                    FACTION[1][real_bool_human_index] = (BoolFalse(b'\x13'), None)
+                    bool_false = Bool(b'\x01', b'')
+                    bool_false.convert_from(False)
+                    FACTION[1][real_bool_human_index] = (bool_false, None)
 
         # To enable recruiting
         if(self.game == "attila" or self.game == "rome"):
@@ -196,9 +210,13 @@ class ESFHotseat(ESFSave):
                 CAMPAIGN_PLAYER_SETUP = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP"])
                 # print(FACTION[1][real_bool_playable_index])
                 if(is_playable):
-                    CAMPAIGN_PLAYER_SETUP[1][real_bool_playable_index] = (BoolTrue(b'\x12'), None)
+                    bool_true = Bool(b'\x01', b'')
+                    bool_true.convert_from(True)
+                    CAMPAIGN_PLAYER_SETUP[1][real_bool_playable_index] = (bool_true, None)
                 else:
-                    CAMPAIGN_PLAYER_SETUP[1][real_bool_playable_index] = (BoolFalse(b'\x13'), None)
+                    bool_false = Bool(b'\x01', b'')
+                    bool_false.convert_from(False)
+                    CAMPAIGN_PLAYER_SETUP[1][real_bool_playable_index] = (bool_false, None)
 
 
     def get_factions_playability(self, chosen_factions):
@@ -252,18 +270,21 @@ class ESFHotseat(ESFSave):
         
         # lol.get_shroud()[1][4][1]
         # Doing all these copies to avoid doing unnecessary reference bugs
-        old_content = old_shroud[1]
-        old_blocks = old_content[4][1][0]
+        if(self.game != "empire"):
+            old_content = old_shroud[1]
+            old_blocks = old_content[4][1][0]
 
-        new_content = old_content.copy()
-        new_shroud = (old_shroud[0], new_content)
+            new_content = old_content.copy()
+            new_shroud = (old_shroud[0], new_content)
 
-        # CAMPAIGN_SHROUD_content
-        record_info = new_content[4][0]
-        new_blocks = (old_blocks[0], [])
-        new_content[4] = (record_info, [new_blocks])
+            # CAMPAIGN_SHROUD_content
+            record_info = new_content[4][0]
+            new_blocks = (old_blocks[0], [])
+            new_content[4] = (record_info, [new_blocks])
 
-        return new_shroud
+            return new_shroud
+        else:
+            return old_shroud
 
     def put_shroud(self, chosen_factions, put_empty=True):
         FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
