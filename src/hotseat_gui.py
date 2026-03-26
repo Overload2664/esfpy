@@ -63,7 +63,12 @@ class HotseatGUI(tk.Tk):
 
     def choose_file(self):
         """Open file dialog, display selected file, and update UI."""
-        chosen = filedialog.askopenfilename(title="Select a file")
+        filetypes = (
+            ("Save files", self._get_save_extension()),
+            ("All files", "*.*")
+        )
+        chosen = filedialog.askopenfilename(title="Select a file", filetypes=filetypes)
+
         if chosen:
             self.selected_file = chosen
             
@@ -332,7 +337,7 @@ class HotseatGUI(tk.Tk):
         self._save_info()
 
         filetypes = (
-            ("Save files", "*.save"),
+            ("Save files", self._get_save_extension()),
             ("All files", "*.*")
         )
 
@@ -402,6 +407,12 @@ class HotseatGUI(tk.Tk):
             widget.destroy()
 
         self.all_widgets = []
+
+    def _get_save_extension(self):
+        if(self.game_var.get() == "empire"):
+            return "*.empire_save"
+        else:
+            return "*.save"
 
 if __name__ == "__main__":
     app = HotseatGUI()
