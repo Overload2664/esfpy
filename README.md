@@ -1,5 +1,47 @@
-ESF(Empire Total War Object Serialization Format) library in Python
+# Warscape Hotseat Tool
+A tool that allows you to create hotseats for total war games.
 
-DISCLAIMER: The code is a disaster, please don't look and if you have to for whatever reasons, please don't judge. I don't normally write code like that I swear. 
+## Supported Games
+- Total War: Shogun II
+- Total War: Rome II
+- Total War: Attila
 
-Credits to [Tomasz Wegrzanowski](https://github.com/taw) for his [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-object.html)
+I've also enabled support for the titles below (I haven't tested and developed a patch for them as I don't own games):
+- Total War: Empire
+- Total War: Napoleon
+
+Online battles should be possible for `Total War: Napoleon` and `Total War: Shogun II` with the `drop-in battle` option.
+
+## Run
+You can either use the ready Windows version or run the script manually.
+To use the ready Windows version, download this file and after extracting it, run the file `run.bat`.
+To run manually, clone the repo and run the `hotseat_gui.py` script:
+```sh
+git clone 
+cd esfpy
+python3 src/hotseat_gui.py
+```
+I recommend using `PyPy` istead of `CPython` as it's noticeably faster. (Done automatically if you use the ready Windows version)
+
+## How to Use
+Youtube Video
+### Prerequiste
+First you have to patch your game to able to save at any given time in campaign, follow this [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-objecthtml).
+
+### Initiate
+After doing the prerequiste, create a save file in a supported game. Run the program and first choose which game the save file belongs to, then select the desired save file. This could take a bit (in my decent PC it sometimes took about 20 seconds) and consume a fair about of RAM (something like 4 GBs depending on the save file). Press `Mark Humanity` and choose factions you want to be humans. Then press save, head back and press save in the options menu and save the file.
+
+### Going next turn
+After a player finishes their turn, make a save file from the game. Open the save file with the program and press `Mark All As Playable` then save the file. Open the save file in the game and press next turn. This should make the game pause on the next player's turn. Now save the game (if it's grayed out then that means you haven't patched the file). Open the new save file with the program again. Press `Mark All As Not Playable` first then press `Mark Playbles`. Choose the faction that the next (human) player belongs to (note that after doind this, only one faction should be selected there). Press save and head back. Press `Set Vision` and select the same faction you selected for Playablility. Press save and head back. Press save in the options menu and make the save file. Now run the new save file in the game. It should be the next (human) player turn!
+After finishing each players turn, repeat the same steps to get to the next player's turn.
+
+## Known issues
+- Fog of War acts up in the first turn. The severity depends on the game.
+- Sometimes playing as a minor faction (the ones that you normally can't choose) crashes the game. (Maybe fixable with mods?)
+- Can't do diplomacy with other human players if the AI refuses your offers. (Maybe fixable with mods?)
+- Between humans' turns, AIs can make diplomacy with others and instead of you accepting or refusing their offers, an AI makes the decisions for you instead. (Maybe fixable with mods?)
+
+## Credits
+Special thanks to [Tomasz Wegrzanowski](https://github.com/taw) for his awesome [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-objecthtml), none of this would've been possible without it.
+
+Also credits to EditSF.
