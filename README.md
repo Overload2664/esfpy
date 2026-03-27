@@ -40,6 +40,7 @@ After finishing each players turn, repeat the same steps to get to the next play
 - Sometimes playing as a minor faction (the ones that you normally can't choose) crashes the game. (Maybe fixable with mods?)
 - Can't do diplomacy with other human players if the AI refuses your offers. (Maybe fixable with mods?)
 - Between humans' turns, AIs can make diplomacy with others and instead of you accepting or refusing their offers, an AI makes the decisions for you instead. (Maybe fixable with mods?)
+- Camera's zoom level sometimes freezes when you reach a player's turn. Just quick save and reload.
 
 ## Credits
 Special thanks to [Tomasz Wegrzanowski](https://github.com/taw) for his awesome [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-objecthtml), none of this would've been possible without it.
