@@ -17,7 +17,7 @@ You can either use the ready Windows version or run the script manually.
 To use the ready Windows version, download this file and after extracting it, run the file `run.bat`.
 To run manually, clone the repo and run the `hotseat_gui.py` script:
 ```sh
-git clone 
+git clone https://github.com/Overload2664/esfpy.git
 cd esfpy
 python3 src/hotseat_gui.py
 ```
@@ -35,7 +35,7 @@ After doing the prerequiste, create a save file in a supported game. Run the pro
 After a player finishes their turn, make a save file from the game. Open the save file with the program and press `Mark All As Playable` then save the file. Open the save file in the game and press next turn. This should make the game pause on the next player's turn. Now save the game (if it's grayed out then that means you haven't patched the file). Open the new save file with the program again. Press `Mark All As Not Playable` first then press `Mark Playbles`. Choose the faction that the next (human) player belongs to (note that after doind this, only one faction should be selected there). Press save and head back. Press `Set Vision` and select the same faction you selected for Playablility. Press save and head back. Press save in the options menu and make the save file. Now run the new save file in the game. It should be the next (human) player turn!
 After finishing each players turn, repeat the same steps to get to the next player's turn.
 
-## Known issues
+## Known Issues
 - Fog of War acts up in the first turn. The severity depends on the game.
 - Sometimes playing as a minor faction (the ones that you normally can't choose) crashes the game. (Maybe fixable with mods?)
 - Can't do diplomacy with other human players if the AI refuses your offers. (Maybe fixable with mods?)
