@@ -27,8 +27,11 @@ class ESFSave:
             for i in compressed_info_data[1][1]:
                 compressed_file += i[0].data
 
-            compressed_file += first_int.to_bytes(4, "little", signed=False)
-            compressed_file += b'\x00\x00\x00\x00'
+            # compressed_file += first_int.to_bytes(4, "little", signed=False)
+            # compressed_file += b'\x00\x00\x00\x00'
+            # Putting the real size makes Windows report corrupt data for some reason
+            compressed_file += b'\xff\xff\xff\xff' # Size
+            compressed_file += b'\xff\xff\xff\xff'
 
             compressed_data = self.header_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "COMPRESSED_DATA"])[1][0][1]
             for i in compressed_data:
