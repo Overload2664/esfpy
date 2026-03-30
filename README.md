@@ -14,7 +14,8 @@ Online battles should be possible for `Total War: Napoleon` and `Total War: Shog
 
 ## Run
 You can either use the ready Windows version or run the script manually.
-To use the ready Windows version, download this file and after extracting it, run the file `run.bat`.
+To use the ready Windows version, download this [file](https://github.com/Overload2664/esfpy/releases/latest/download/hotseat_tool.zip) and after extracting it, run the file `run.bat`.
+
 To run manually, clone the repo and run the `hotseat_gui.py` script:
 ```sh
 git clone https://github.com/Overload2664/esfpy.git
