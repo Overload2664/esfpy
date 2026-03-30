@@ -27,7 +27,7 @@ I recommend using `PyPy` istead of `CPython` as it's noticeably faster. (Done au
 ## How to Use
 Youtube Video
 ### Prerequiste
-First you have to patch your game to able to save at any given time in campaign, follow this [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-objecthtml).
+First you have to patch your game to able to save at any given time in campaign, follow this [guide](https://github.com/Overload2664/total_save_patch?tab=readme-ov-file#total-save-patch).
 
 ### Initiate
 After doing the prerequiste, create a save file in a supported game. Run the program and first choose which game the save file belongs to, then select the desired save file. This could take a bit (in my decent PC it sometimes took about 20 seconds) and consume a fair about of RAM (something like 4 GBs depending on the save file). Press `Mark Humanity` and choose factions you want to be humans. Then press save, head back and press save in the options menu and save the file.
