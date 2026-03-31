@@ -25,7 +25,7 @@ python3 src/hotseat_gui.py
 I recommend using `PyPy` istead of `CPython` as it's noticeably faster. (Done automatically if you use the ready Windows version)
 
 ## How to Use
-Youtube Video
+[Video](https://odysee.com/How-to-make-hotseat-for-Total-War-Attila%2C-Rome-II-and-Shogun-II:6)
 ### Prerequiste
 First you have to patch your game to able to save at any given time in campaign, follow this [guide](https://github.com/Overload2664/total_save_patch?tab=readme-ov-file#total-save-patch).
 
