@@ -53,4 +53,4 @@ If you encounter an issue or want to ask a question, open an issue or join the [
 
 ## Credits
 Special thanks to [Tomasz Wegrzanowski](https://github.com/taw) for his awesome [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-objecthtml), none of this would've been possible without it.
-Also credits to EditSF.
+Also credits to [EditSF](https://github.com/Overload2664/esfpy/edit/master/README.md), used the tool immensely.
