@@ -48,7 +48,9 @@ After finishing each players turn, repeat the same steps to get to the next play
 - Camera's zoom level sometimes freezes when you reach a player's turn. Just quick save and reload.
 - Program takes considerable time and memory to read or write a save file. Unfortunately this is due to my design choices and the programming language this is written in.
 
+## Bug Report and Contact
+If you encounter an issue or want to ask a question, open an issue or join the [Discord server](https://discord.gg/gZuHrSV6Zx).
+
 ## Credits
 Special thanks to [Tomasz Wegrzanowski](https://github.com/taw) for his awesome [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-objecthtml), none of this would've been possible without it.
-
 Also credits to EditSF.
