@@ -10,6 +10,7 @@ from ESFWriter import ESFWriter
 from ESFtypes import from_uintvart, to_uintvart, Magiccode
 from ESF import ESF
 from ESFHotseat import ESFHotseat
+from ESFSaveMulti import ESFMultiSaveConversion
 
 SUPPORTED_GAMES = [
     ("empire", "Empire (untested)"),
@@ -26,6 +27,7 @@ class HotseatGUI(tk.Tk):
         super().__init__()
         self.game_var = tk.StringVar(value=DEFAULT_GAME)
         self.hotseat_reader = None
+        self.multiplayer_converter = None
         self.selected_file = None
         self.vision = ""
         self.turn_order = -1
@@ -80,6 +82,7 @@ class HotseatGUI(tk.Tk):
 
             try:
                 self.hotseat_reader = ESFHotseat(game=self.game_var.get())
+                self.multiplayer_converter = None
                 self.hotseat_reader.read_file(self.selected_file)
                 self._get_info()
                 self._create_options_widgets()
@@ -105,6 +108,7 @@ class HotseatGUI(tk.Tk):
         self.all_human_button = ttk.Button(self.options_frame, text="Mark All As Human", command=self.mark_all_as_human)
         self.no_all_human_button = ttk.Button(self.options_frame, text="Mark All As Not Human", command=self.mark_all_as_not_human)
         self.change_turn_button = ttk.Button(self.options_frame, text="Change Turn", command=self._change_turn_widgets)
+        self.convert_numtiplayer = ttk.Button(self.options_frame, text="Multiplayer Conversion", command=self._create_multi_widgets)
 
         self.save_button = ttk.Button(self, text="Save", command=self.save_to_file)
         self.back_button = ttk.Button(self, text="Back", command=self._create_file_widgets)
@@ -122,6 +126,7 @@ class HotseatGUI(tk.Tk):
         self.all_human_button.pack(pady=10)
         self.no_all_human_button.pack(pady=10)
         self.change_turn_button.pack(pady=10)
+        self.convert_numtiplayer.pack(pady=10)
         
         self.save_button.pack(pady=10)
         self.back_button.pack(pady=10)
@@ -345,7 +350,7 @@ class HotseatGUI(tk.Tk):
             title="Save File As",
             initialdir=os.path.curdir,  # You can set a default directory, e.g., os.path.expanduser("~") for home dir
             filetypes=filetypes,
-            defaultextension=".save",
+            defaultextension=self._get_save_extension()[1:],          # The function includes a star first which we don't want
             confirmoverwrite=True # This is the default, but good to be explicit
         )
 
@@ -356,6 +361,124 @@ class HotseatGUI(tk.Tk):
             messagebox.showinfo(
                 "Success",
                 f"File saved to: \n{self.saved_filepath}"
+            )
+        else:
+            messagebox.showerror(
+                "Error",
+                "No file was selected."
+            )
+
+    def _create_multi_widgets(self):
+        self.remove_widgets()
+
+        self.file_frame = ttk.LabelFrame(self, text="Multiplayer Save File Selection")
+        self.select_button = ttk.Button(self.file_frame, text="Choose Multiplayer Save File", command=self.choose_multi)
+        self.file_label = ttk.Label(self.file_frame, text="No file selected", width=50)
+
+        self.to_single_button = ttk.Button(self, text="Import To Single", command=self._to_single)
+        self.to_multi_button = ttk.Button(self, text="Import To Multiplayer", command=self._to_multi)
+        self.back_button = ttk.Button(self, text="Back", command=self._create_options_widgets)
+        
+        self.all_widgets += [self.file_frame, self.select_button, self.file_label, self.back_button, self.to_single_button, self.to_multi_button]
+
+        # self.title_label.pack(pady=10)
+        self.file_frame.pack(fill="x", padx=20, pady=10)
+        self.select_button.grid(row=0, column=0, padx=5, pady=5)
+        self.file_label.grid(row=0, column=1, padx=5, pady=5)
+        self.to_single_button.pack(pady=10)
+        self.to_multi_button.pack(pady=10)
+        self.back_button.pack(pady=10)
+
+    def choose_multi(self):
+        """Open file dialog, display selected file, and update UI."""
+        filetypes = (
+            ("Multiplayer Save files", self._get_multi_save_extension()),
+            ("All files", "*.*")
+        )
+        chosen = filedialog.askopenfilename(title="Select a file", filetypes=filetypes)
+
+        if chosen:
+            self.selected_file = chosen
+            
+            if not os.path.exists(self.selected_file):
+                messagebox.showerror(
+                    "Error",  # Title of the message box
+                    f"An error occurred: {e}\n\n Please check the file path and try again."
+                )
+
+            try:
+                self.multiplayer_converter = ESFMultiSaveConversion(game=self.game_var.get())
+                self.multiplayer_converter.read_file(self.selected_file)
+                messagebox.showinfo(
+                    "Success",
+                    f"Multiplayer save loaded"
+                )
+            except Exception as e:
+                messagebox.showerror(
+                    "File Read Error",
+                    f"Could not read the save file, maybe a wrong file was chosen? \n\n Full error: {e}"
+                )
+        else:
+            self.file_label.config(text="No file selected")
+
+    def _to_single(self):
+        if(self.multiplayer_converter == None):
+            messagebox.showerror(
+                "None Selected",
+                f"No multiplayer save file was selected, please select one first."
+            )
+            return
+        try:
+            self.multiplayer_converter.multi_to_single(self.hotseat_reader)
+            self._get_info()
+            messagebox.showinfo(
+                "Success",
+                f"Multiplayer save loaded"
+            )
+        except Exception as e:
+            messagebox.showerror(
+                "Unspecified Error",
+                f"An unexpected error happened. \n\n Full error: {e}"
+            )
+
+    def _to_multi(self):
+        if(self.multiplayer_converter == None):
+            messagebox.showerror(
+                "None Selected",
+                f"No multiplayer save file was selected, please select one first."
+            )
+            return
+
+        self._save_info()
+
+        try:
+            self.multiplayer_converter.single_to_multi(self.hotseat_reader)
+        except Exception as e:
+            messagebox.showerror(
+                "Unspecified Error",
+                f"An unexpected error happened. \n\n Full error: {e}"
+            )
+            return
+
+        filetypes = (
+            ("Save files", self._get_multi_save_extension()),
+            ("All files", "*.*")
+        )
+
+        filepath = filedialog.asksaveasfilename(
+            title="Multiplayer Save File As",
+            initialdir=os.path.curdir,  # You can set a default directory, e.g., os.path.expanduser("~") for home dir
+            filetypes=filetypes,
+            defaultextension=self._get_multi_save_extension()[1:],
+            confirmoverwrite=True # This is the default, but good to be explicit
+        )
+
+        if filepath:
+            # User selected a file path.
+            self.multiplayer_converter.write_file(filepath)
+            messagebox.showinfo(
+                "Success",
+                f"Multiplayer saved to: \n{filepath}"
             )
         else:
             messagebox.showerror(
@@ -413,6 +536,13 @@ class HotseatGUI(tk.Tk):
             return "*.empire_save"
         else:
             return "*.save"
+
+    def _get_multi_save_extension(self):
+        if(self.game_var.get() == "empire"):
+            return "*.empire_save_multiplayer"
+        else:
+            return "*.save_multiplayer"
+
 
 if __name__ == "__main__":
     app = HotseatGUI()
