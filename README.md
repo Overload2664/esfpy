@@ -43,12 +43,14 @@ After finishing each players turn, repeat the same steps to get to the next play
 ## Known Issues
 - Fog of War acts up in the first turn. The severity depends on the game.
 - Sometimes playing as a minor faction (the ones that you normally can't choose) crashes the game. (Maybe fixable with mods?)
-- Can't do diplomacy with other human players if the AI refuses your offers. (Maybe fixable with mods?)
+- Can't do diplomacy with other human players if the AI refuses your offers. Possibly fixable with mods, currently I've only found one for Attila though. [Attila Mod](https://steamcommunity.com/workshop/filedetails/?id=596714943).
 - Between humans' turns, AIs can make diplomacy with others and instead of you accepting or refusing their offers, an AI makes the decisions for you instead. (Maybe fixable with mods?)
 - Camera's zoom level sometimes freezes when you reach a player's turn. Just quick save and reload.
 - Program takes considerable time and memory to read or write a save file. Unfortunately this is due to my design choices and the programming language this is written in.
 
+## Bug Report and Contact
+If you encounter an issue or want to ask a question, open an issue or join the [Discord server](https://discord.gg/gZuHrSV6Zx).
+
 ## Credits
 Special thanks to [Tomasz Wegrzanowski](https://github.com/taw) for his awesome [guide](https://t-a-w.blogspot.com/2012/03/esf-empire-total-war-object.html), none of this would've been possible without it.
-
-Also credits to EditSF.
+Also credits to [EditSF](https://github.com/Overload2664/esfpy/edit/master/README.md), used the tool immensely.
