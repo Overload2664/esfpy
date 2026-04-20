@@ -14,7 +14,7 @@ from ESFSaveMulti import ESFMultiSaveConversion
 
 SUPPORTED_GAMES = [
     ("empire", "Empire (untested)"),
-    ("napoleon", "Napoleon (untested)"),
+    ("napoleon", "Napoleon"),
     ("shogun", "Shogun II"),
     ("rome", "Rome II"),
     ("attila", "Attila")
