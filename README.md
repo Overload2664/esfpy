@@ -2,13 +2,11 @@
 A tool that allows you to create hotseats for total war games.
 
 ## Supported Games
+- Total War: Empire
 - Total War: Napoleon
 - Total War: Shogun II
 - Total War: Rome II
 - Total War: Attila
-
-I've also enabled support for the titles below (I haven't tested and developed a patch for them as I don't own games):
-- Total War: Empire
 
 Online battles should be possible for `Total War: Napoleon` and `Total War: Shogun II` with the `drop-in battle` option.
 
@@ -30,7 +28,7 @@ I recommend using `PyPy` istead of `CPython` as it's noticeably faster. (Done au
 First you have to patch your game to able to save at any given time in campaign, follow this [guide](https://github.com/Overload2664/total_save_patch?tab=readme-ov-file#total-save-patch).
 
 ### Initiate
-After doing the prerequiste, create a save file in a supported game. Run the program and first choose which game the save file belongs to, then select the desired save file. This could take a bit (in my decent PC it sometimes took about 20 seconds) and consume a fair about of RAM (something like 4 GBs depending on the save file). Press `Mark Humanity` and choose factions you want to be humans. In Napoleon, you have to mark all factions as humans else you get a crash so press `Mark All As Human` instead. Then press save, head back and press save in the options menu and save the file.
+After doing the prerequiste, create a save file in a supported game. Run the program and first choose which game the save file belongs to, then select the desired save file. This could take a bit (in my decent PC it sometimes took about 20 seconds) and consume a fair about of RAM (something like 4 GBs depending on the save file). Press `Mark Humanity` and choose factions you want to be humans. In Empire and Napoleon, you have to mark all factions as humans else you get a crash so press `Mark All As Human` instead. Then press save, head back and press save in the options menu and save the file.
 
 ### Going next turn
 After a player finishes their turn, make a save file from the game. Open the save file with the program and press `Mark All As Playable` then save the file. Open the save file in the game and press next turn. This should make the game pause on the next player's turn. Now save the game (if it's grayed out then that means you haven't patched the game). Open the new save file with the program again. Press `Mark All As Not Playable` first then press `Mark Playables`. Choose the faction that the next (human) player belongs to (note that after doind this, only one faction should be selected there). Press save and head back. Press `Set Vision` and select the same faction you selected for playables. Press save and head back. Press save in the options menu and make the save file. Now run the new save file in the game. It should be the next (human) player turn!

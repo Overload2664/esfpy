@@ -13,7 +13,7 @@ from ESFHotseat import ESFHotseat
 from ESFSaveMulti import ESFMultiSaveConversion
 
 SUPPORTED_GAMES = [
-    ("empire", "Empire (untested)"),
+    ("empire", "Empire"),
     ("napoleon", "Napoleon"),
     ("shogun", "Shogun II"),
     ("rome", "Rome II"),
