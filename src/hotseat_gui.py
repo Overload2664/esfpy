@@ -37,7 +37,7 @@ class HotseatGUI(tk.Tk):
         
 
         self.title("Warscape Hotseat Tool")
-        self.geometry("500x600") # Increased height for preview
+        self.geometry("650x700") # Increased height for preview
         self.resizable(True, True)
         self.all_widgets = []
         self._create_file_widgets()
@@ -375,19 +375,65 @@ class HotseatGUI(tk.Tk):
         self.select_button = ttk.Button(self.file_frame, text="Choose Multiplayer Save File", command=self.choose_multi)
         self.file_label = ttk.Label(self.file_frame, text="No file selected", width=50)
 
+        # --- Player Data Frames ---
+        self.players_frame = ttk.Frame(self)
+        
+        # Player 1 (Left)
+        self.p1_frame = ttk.LabelFrame(self.players_frame, text="Player 1")
+        self.p1_frame.pack(side="left", expand=True, fill="both", padx=10)
+        
+        ttk.Label(self.p1_frame, text="Steam Name:").grid(row=0, column=0, sticky="e", padx=5, pady=2)
+        self.p1_name_entry = ttk.Entry(self.p1_frame)
+        self.p1_name_entry.grid(row=0, column=1, padx=5, pady=2)
+        
+        ttk.Label(self.p1_frame, text="Faction:").grid(row=1, column=0, sticky="e", padx=5, pady=2)
+        self.p1_faction_entry = ttk.Entry(self.p1_frame)
+        self.p1_faction_entry.grid(row=1, column=1, padx=5, pady=2)
+        
+        ttk.Label(self.p1_frame, text="Steam ID:").grid(row=2, column=0, sticky="e", padx=5, pady=2)
+        self.p1_id_entry = ttk.Entry(self.p1_frame)
+        self.p1_id_entry.grid(row=2, column=1, padx=5, pady=2)
+
+        # Player 2 (Right)
+        self.p2_frame = ttk.LabelFrame(self.players_frame, text="Player 2")
+        self.p2_frame.pack(side="right", expand=True, fill="both", padx=10)
+        
+        ttk.Label(self.p2_frame, text="Steam Name:").grid(row=0, column=0, sticky="e", padx=5, pady=2)
+        self.p2_name_entry = ttk.Entry(self.p2_frame)
+        self.p2_name_entry.grid(row=0, column=1, padx=5, pady=2)
+        
+        ttk.Label(self.p2_frame, text="Faction:").grid(row=1, column=0, sticky="e", padx=5, pady=2)
+        self.p2_faction_entry = ttk.Entry(self.p2_frame)
+        self.p2_faction_entry.grid(row=1, column=1, padx=5, pady=2)
+        
+        ttk.Label(self.p2_frame, text="Steam ID:").grid(row=2, column=0, sticky="e", padx=5, pady=2)
+        self.p2_id_entry = ttk.Entry(self.p2_frame)
+        self.p2_id_entry.grid(row=2, column=1, padx=5, pady=2)
+        # --------------------------
+
         self.to_single_button = ttk.Button(self, text="Import To Single", command=self._to_single)
         self.to_multi_button = ttk.Button(self, text="Import To Multiplayer", command=self._to_multi)
         self.back_button = ttk.Button(self, text="Back", command=self._create_options_widgets)
         
-        self.all_widgets += [self.file_frame, self.select_button, self.file_label, self.back_button, self.to_single_button, self.to_multi_button]
+        # Added self.players_frame to widget list so it gets cleared with the rest
+        self.all_widgets += [
+            self.file_frame, self.select_button, self.file_label, 
+            self.players_frame, 
+            self.back_button, self.to_single_button, self.to_multi_button
+        ]
 
         # self.title_label.pack(pady=10)
         self.file_frame.pack(fill="x", padx=20, pady=10)
         self.select_button.grid(row=0, column=0, padx=5, pady=5)
         self.file_label.grid(row=0, column=1, padx=5, pady=5)
+        
+        # Pack the new players frame below the file chooser and above the buttons
+        self.players_frame.pack(fill="x", padx=10, pady=10)
+        
         self.to_single_button.pack(pady=10)
         self.to_multi_button.pack(pady=10)
         self.back_button.pack(pady=10)
+
 
     def choose_multi(self):
         """Open file dialog, display selected file, and update UI."""
@@ -450,8 +496,13 @@ class HotseatGUI(tk.Tk):
             return
 
         self._save_info()
+        
+        player1_data = (self.p1_name_entry.get(), self.p1_faction_entry.get(), self.p1_id_entry.get())
+        player2_data = (self.p2_name_entry.get(), self.p2_faction_entry.get(), self.p2_id_entry.get())
 
         try:
+            self.multiplayer_converter.change_data(player=0, data=player1_data)
+            self.multiplayer_converter.change_data(player=1, data=player2_data)
             self.multiplayer_converter.single_to_multi(self.hotseat_reader)
         except Exception as e:
             messagebox.showerror(
