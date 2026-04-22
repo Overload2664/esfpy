@@ -109,11 +109,14 @@ class HotseatGUI(tk.Tk):
         self.no_all_human_button = ttk.Button(self.options_frame, text="Mark All As Not Human", command=self.mark_all_as_not_human)
         self.change_turn_button = ttk.Button(self.options_frame, text="Change Turn", command=self._change_turn_widgets)
         self.convert_numtiplayer = ttk.Button(self.options_frame, text="Multiplayer Conversion", command=self._create_multi_widgets)
+        self.list_politics = ttk.Button(self.options_frame, text="Show Politics", command=self._list_all_politics_widgets)
 
         self.save_button = ttk.Button(self, text="Save", command=self.save_to_file)
         self.back_button = ttk.Button(self, text="Back", command=self._create_file_widgets)
 
-        self.all_widgets += [self.options_frame, self.get_all_factions_button, self.all_playable_button, self.no_all_playable_button, self.all_human_button, self.no_all_human_button, self.save_button, self.back_button, self.playable_button, self.humanity_button, self.vision_button, self.change_turn_button]
+        self.all_widgets += [self.options_frame, self.get_all_factions_button, self.all_playable_button, self.no_all_playable_button,
+            self.all_human_button, self.no_all_human_button, self.save_button, self.back_button, self.playable_button, self.humanity_button,
+            self.vision_button, self.change_turn_button, self.convert_numtiplayer, self.list_politics]
 
         # self.title_label.pack(pady=10)
         self.options_frame.pack(fill="x", padx=20, pady=10)
@@ -127,6 +130,7 @@ class HotseatGUI(tk.Tk):
         self.no_all_human_button.pack(pady=10)
         self.change_turn_button.pack(pady=10)
         self.convert_numtiplayer.pack(pady=10)
+        self.list_politics.pack(pady=10)
         
         self.save_button.pack(pady=10)
         self.back_button.pack(pady=10)
@@ -163,6 +167,43 @@ class HotseatGUI(tk.Tk):
             is_playable = "is playable" if self.all_playability[faction_index] else "not playable"
             is_human = "is human" if self.all_humanity[faction_index] else "not human"
             info = str(faction_index + 1) + ". " + self.all_factions[faction_index] + ": " + is_playable + ", " + is_human
+            self.listbox.insert(tk.END, info)
+
+        self.back_button = ttk.Button(self, text="Back", command=self._create_options_widgets)
+        self.back_button.pack(side=tk.LEFT, padx=5)
+        self.all_widgets.append(self.back_button)
+
+    def _list_all_politics_widgets(self):
+        self.remove_widgets()
+            
+        # --- Listbox Widget ---
+        self.listbox_frame = ttk.Frame(self)
+        self.listbox_frame.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+        self.all_widgets.append(self.listbox_frame)
+
+        # Scrollbar for the Listbox
+        self.scrollbar = ttk.Scrollbar(self.listbox_frame, orient=tk.VERTICAL)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # The Listbox itself
+        self.listbox = tk.Listbox(
+            self.listbox_frame,
+            yscrollcommand=self.scrollbar.set, # Link scrollbar to listbox
+            selectmode=tk.SINGLE, # or tk.MULTIPLE, tk.BROWSE, tk.EXTENDED
+            height=10 # Number of visible lines
+        )
+        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Configure scrollbar to control the listbox
+        self.scrollbar.config(command=self.listbox.yview)
+
+        factions_politics = self.hotseat_reader.get_all_factions_politics()
+
+        self.listbox.insert(tk.END, "Factions Politics")
+        for faction_index in range(len(self.all_factions)):
+            is_playable = "is playable" if self.all_playability[faction_index] else "not playable"
+            is_human = "is human" if self.all_humanity[faction_index] else "not human"
+            info = str(faction_index + 1) + ". " + self.all_factions[faction_index] + ": " + factions_politics[faction_index]
             self.listbox.insert(tk.END, info)
 
         self.back_button = ttk.Button(self, text="Back", command=self._create_options_widgets)
@@ -394,6 +435,10 @@ class HotseatGUI(tk.Tk):
         self.p1_id_entry = ttk.Entry(self.p1_frame)
         self.p1_id_entry.grid(row=2, column=1, padx=5, pady=2)
 
+        ttk.Label(self.p1_frame, text="Politics:").grid(row=3, column=0, sticky="e", padx=5, pady=2)
+        self.p1_politics_entry = ttk.Entry(self.p1_frame)
+        self.p1_politics_entry.grid(row=3, column=1, padx=5, pady=2)
+
         # Player 2 (Right)
         self.p2_frame = ttk.LabelFrame(self.players_frame, text="Player 2")
         self.p2_frame.pack(side="right", expand=True, fill="both", padx=10)
@@ -409,6 +454,10 @@ class HotseatGUI(tk.Tk):
         ttk.Label(self.p2_frame, text="Steam ID:").grid(row=2, column=0, sticky="e", padx=5, pady=2)
         self.p2_id_entry = ttk.Entry(self.p2_frame)
         self.p2_id_entry.grid(row=2, column=1, padx=5, pady=2)
+
+        ttk.Label(self.p2_frame, text="Politics:").grid(row=3, column=0, sticky="e", padx=5, pady=2)
+        self.p2_politics_entry = ttk.Entry(self.p2_frame)
+        self.p2_politics_entry.grid(row=3, column=1, padx=5, pady=2)
         # --------------------------
 
         self.to_single_button = ttk.Button(self, text="Import To Single", command=self._to_single)
@@ -497,8 +546,8 @@ class HotseatGUI(tk.Tk):
 
         self._save_info()
         
-        player1_data = (self.p1_name_entry.get(), self.p1_faction_entry.get(), self.p1_id_entry.get())
-        player2_data = (self.p2_name_entry.get(), self.p2_faction_entry.get(), self.p2_id_entry.get())
+        player1_data = (self.p1_name_entry.get(), self.p1_faction_entry.get(), self.p1_id_entry.get(), self.p1_politics_entry.get())
+        player2_data = (self.p2_name_entry.get(), self.p2_faction_entry.get(), self.p2_id_entry.get(), self.p2_politics_entry.get())
 
         try:
             self.multiplayer_converter.change_data(player=0, data=player1_data)

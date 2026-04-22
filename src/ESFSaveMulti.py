@@ -8,13 +8,14 @@ from ESFWriter import ESFWriter
 from ESF import ESF
 from ESFSave import ESFSave
 
-# (steam_username, faction_name, steam_id, player_offset)
+# politics only valid for Attila
+# (steam_username, faction_name, steam_id, politics, player_offset)
 DATA_INDICES = {
-    "empire": (10, 11, 13, 7),
-    "napoleon": (10, 11, 13, 7),
-    "shogun": (10, 11, 13, 7),
-    "rome": (9, 10, 13, 7),
-    "attila": (9, 10, 13, 7)
+    "empire": (10, 11, 13, -1, 7),
+    "napoleon": (10, 11, 13, -1, 7),
+    "shogun": (10, 11, 13, -1, 7),
+    "rome": (9, 10, 13, 11, 7),
+    "attila": (9, 10, 13, 11, 7)
 }
 
 class ESFMultiSave:
@@ -110,14 +111,15 @@ class ESFMultiSaveConversion(ESFMultiSave):
         self.game = game
 
     # player number 0 and 1
-    # (steam_username, faction_name, steam_id)
+    # (steam_username, faction_name, steam_id, faction_politics)
     def change_data(self, player, data):
-        steam_username, faction_name, steam_id = data
-        steam_username_index, faction_name_index, steam_id_index, player_offset = DATA_INDICES[self.game]
+        steam_username, faction_name, steam_id, faction_politics = data
+        steam_username_index, faction_name_index, steam_id_index, politics_index, player_offset = DATA_INDICES[self.game]
         if(player == 1):
             steam_username_index += player_offset
             faction_name_index += player_offset
             steam_id_index += player_offset
+            politics_index += player_offset
         
         # Change header first
         esfs = [self.main_esf]
@@ -128,6 +130,9 @@ class ESFMultiSaveConversion(ESFMultiSave):
             real_steam_username_index = esf.get_data_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"], steam_username_index)
             real_faction_name_index = esf.get_data_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"], faction_name_index)
             real_steam_id_index = esf.get_data_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"], steam_id_index)
+            real_politics_index = -1
+            if(self.game == "attila" or self.game == "rome"):
+                real_politics_index = esf.get_data_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"], politics_index)
 
             save_game_header = esf.get_element_by_name(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"])[1]
 
@@ -144,6 +149,9 @@ class ESFMultiSaveConversion(ESFMultiSave):
                 steam_id_data = UInt64(b'\x09', b'')
                 steam_id_data.convert_from(int(steam_id))
                 save_game_header[real_steam_id_index] = (steam_id_data, None)
+
+            if(faction_politics != "" and (self.game == "attila" or self.game == "rome")):
+                save_game_header[real_politics_index] = (ASCIIString(faction_politics), None)
 
     def multi_to_single(self, single):
         multi_env_index = self.main_esf.get_record_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME"], "CAMPAIGN_ENV")
@@ -175,8 +183,10 @@ class ESFMultiSaveConversion(ESFMultiSave):
 # lol = ESFMultiSave()
 # lol.read_file("lmaoer.save_multiplayer")
 # hmm = lol.main_esf.get_element_by_name(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"])[1]
+# print(hmm[lol.main_esf.get_data_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"], 9)])
 # print(hmm[lol.main_esf.get_data_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"], 10)])
-# # print(lol.main_esf.get_element_by_name(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_SETUP_LOCAL"]))
+# print(hmm[lol.main_esf.get_data_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "SAVE_GAME_HEADER_MULTIPLAYER"], 11)])
+# print(lol.main_esf.get_element_by_name(["MULTIPLAYER_CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_SETUP_LOCAL"]))
 # menv_index = lol.main_esf.get_record_element_index(["MULTIPLAYER_CAMPAIGN_SAVE_GAME"], "CAMPAIGN_ENV")
 # hmm = lol.main_esf.get_element_by_name(["MULTIPLAYER_CAMPAIGN_SAVE_GAME"])
 # hmm[1][menv_index] = single.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME"])[1][env_index]

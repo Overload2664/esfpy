@@ -19,6 +19,7 @@ SHOGUN_PLAYABLE_INDEX = 1
 ATTILA_NAME_INDEX = 1
 ATTILA_HUMAN_INDEX = 5
 ATTILA_PLAYABLE_INDEX = 1
+ATTILA_POLITICS_INDEX = 5
 
 # Notes:
 """
@@ -86,6 +87,19 @@ class ESFHotseat(ESFSave):
             faction_names.append(faction_name)
 
         return faction_names
+
+    # Used for Attila in multiplayer
+    def get_all_factions_politics(self):
+        faction_politics = []
+        FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
+
+        for i in range(len(FACTION_ARRAY)):
+            politics_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP"], ATTILA_POLITICS_INDEX)
+            faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_PLAYER_SETUP"])[1][politics_index]
+            faction_name = faction_name_tup[0].data
+            faction_politics.append(faction_name)
+
+        return faction_politics
     
     def increment_turn(self, number=1):
         WORLD = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD"])[1]
