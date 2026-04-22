@@ -30,6 +30,7 @@ class HotseatGUI(tk.Tk):
         self.multiplayer_converter = None
         self.selected_file = None
         self.vision = ""
+        self.fow = None
         self.turn_order = -1
         self.all_factions = []
         self.all_playability = []
@@ -107,6 +108,8 @@ class HotseatGUI(tk.Tk):
         self.no_all_playable_button = ttk.Button(self.options_frame, text="Mark All As Not Playable", command=self.mark_all_as_not_playable)
         self.all_human_button = ttk.Button(self.options_frame, text="Mark All As Human", command=self.mark_all_as_human)
         self.no_all_human_button = ttk.Button(self.options_frame, text="Mark All As Not Human", command=self.mark_all_as_not_human)
+        self.enable_fow_button = ttk.Button(self.options_frame, text="Enable FoW", command=self.enable_fow)
+        self.disable_fow_button = ttk.Button(self.options_frame, text="Disable FoW", command=self.disable_fow)
         self.change_turn_button = ttk.Button(self.options_frame, text="Change Turn", command=self._change_turn_widgets)
         self.convert_numtiplayer = ttk.Button(self.options_frame, text="Multiplayer Conversion", command=self._create_multi_widgets)
         self.list_politics = ttk.Button(self.options_frame, text="Show Politics", command=self._list_all_politics_widgets)
@@ -116,7 +119,7 @@ class HotseatGUI(tk.Tk):
 
         self.all_widgets += [self.options_frame, self.get_all_factions_button, self.all_playable_button, self.no_all_playable_button,
             self.all_human_button, self.no_all_human_button, self.save_button, self.back_button, self.playable_button, self.humanity_button,
-            self.vision_button, self.change_turn_button, self.convert_numtiplayer, self.list_politics]
+            self.vision_button, self.change_turn_button, self.convert_numtiplayer, self.list_politics, self.enable_fow_button, self.disable_fow_button]
 
         # self.title_label.pack(pady=10)
         self.options_frame.pack(fill="x", padx=20, pady=10)
@@ -128,6 +131,8 @@ class HotseatGUI(tk.Tk):
         self.no_all_playable_button.pack(pady=10)
         self.all_human_button.pack(pady=10)
         self.no_all_human_button.pack(pady=10)
+        self.enable_fow_button.pack(pady=10)
+        self.disable_fow_button.pack(pady=10)
         self.change_turn_button.pack(pady=10)
         self.convert_numtiplayer.pack(pady=10)
         self.list_politics.pack(pady=10)
@@ -602,6 +607,12 @@ class HotseatGUI(tk.Tk):
         for i in range(len(self.all_humanity)):
             self.all_humanity[i] = False
 
+    def enable_fow(self):
+        self.fow = True
+
+    def disable_fow(self):
+        self.fow = False
+
     def _get_info(self):
         self.all_factions = self.hotseat_reader.get_all_factions()
         self.vision = self.hotseat_reader.get_vision()
@@ -624,6 +635,8 @@ class HotseatGUI(tk.Tk):
             
             self.hotseat_reader.mark_factions_as_playable([faction], self.all_playability[i])
             self.hotseat_reader.mark_factions_as_human([faction], self.all_humanity[i])
+            if(self.fow != None):
+                self.hotseat_reader.mark_fow([faction], self.fow)
 
     def remove_widgets(self):
         for widget in self.all_widgets:

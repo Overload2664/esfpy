@@ -411,6 +411,27 @@ class ESFHotseat(ESFSave):
                     #     new_place = last_record + 1
                     FACTION[1][new_place:new_place] = [cam_missions]
     
+    def mark_fow(self, chosen_factions, fow=True):
+        FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
+        factions_nature = []
+
+        for i in range(len(FACTION_ARRAY)):
+            FACTION = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])
+            name_index = self.get_name_index()
+            real_name_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"], name_index)
+
+            faction_name_tup = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION"])[1][real_name_index]
+            faction_name = faction_name_tup[0].data
+            if(faction_name in chosen_factions):
+                for node in FACTION[1]:
+                    if(isinstance(node[0], NodeRecord) and node[0].tag_name == "CAMPAIGN_SHROUD"):
+                        real_fow_index = self.main_esf.get_data_element_index(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY", i, "FACTION", "CAMPAIGN_SHROUD"], 0)
+
+                        fow_bool = Bool(b'\x01', b'')
+                        fow_bool.convert_from(fow)
+                        node[1][real_fow_index] = (fow_bool, None)
+                        break
+
     # To be able too recruit armies in Atilla
     def change_modifiers(self, chosen_factions, to_human=True):
         FACTION_ARRAY = self.main_esf.get_element_by_name(["CAMPAIGN_SAVE_GAME", "CAMPAIGN_ENV", "CAMPAIGN_MODEL", "WORLD", "FACTION_ARRAY"])[1]
