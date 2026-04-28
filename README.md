@@ -50,7 +50,7 @@ For `Total War: Napoleon` and `Total War: Shogun II`, you should be able to enga
 - If the screen looks weird, you can't control anything and/or the turn order is stuck, then that could be due to choosing different factions for `vision` and `playable` or having more than one faction chosen as `playable`.
 
 ## Known Issues
-- Fog of War acts up in the first turn. The severity depends on the game.
+- Fog of War acts up in the first turn. The severity depends on the game. You can either disable FoW (using the tool) for the first turn or just start the hotseat from turn 2. Either way a compromise has to be made.
 - Sometimes playing as a minor faction (the ones that you normally can't choose) crashes the game. (Maybe fixable with mods?)
 - Can't do diplomacy with other human players if the AI refuses your offers. Possibly fixable with mods, currently I've only found one for Attila though. [Attila Mod](https://steamcommunity.com/workshop/filedetails/?id=596714943).
 - Between humans' turns, AIs can make diplomacy with others and instead of you accepting or refusing their offers, an AI makes the decisions for you instead. (Maybe fixable with mods?)
